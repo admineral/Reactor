@@ -7,7 +7,7 @@ import axios from "axios";
 import { LiveProvider, LivePreview, LiveError } from "react-live";
 import Draggable from "react-draggable";
 
-const API_KEY = "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";
+const API_KEY = "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";
 
 const initialCode = `
 function LandingPage() {
