@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.10.8",
     "@mui/material": "^5.12.3",
     "@testing-library/jest-dom": "^5.16.5",
@@ -48,3 +49,4 @@
     "@babel/plugin-transform-react-jsx": "^7.21.5"
   }
 }
+
