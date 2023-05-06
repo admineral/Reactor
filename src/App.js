@@ -7,7 +7,7 @@ import axios from "axios";
 import { LiveProvider, LivePreview, LiveError } from "react-live";
 import Draggable from "react-draggable";
 
-const API_KEY = "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";
+
 
 const initialCode = `
 function LandingPage() {
@@ -97,25 +97,7 @@ function App() {
     try {
       const formattedPrompt = `I am using react-live with AceEditor to build a web application. My current code is:\n${code}\n\nUser: ${prompt}\n\nChatGPT, please provide me the code to achieve this, answer with full code:`;
 
-      const response = await axios.post(
-        'https://api.openai.com/v1/engines/text-davinci-003/completions',
-        {
-          prompt: formattedPrompt,
-          max_tokens: 2000,
-          n: 1,
-          stop: null,
-          temperature: 0.5,
-          top_p: 1,
-          frequency_penalty: 0,
-          presence_penalty: 0,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${API_KEY}`,
-          },
-        }
-      );
+      const response = await axios.post('/api/openai', { prompt: formattedPrompt });
 
       if (response.data.choices && response.data.choices.length > 0) {
         const chatGptResponse = response.data.choices[0].text.trim();
@@ -129,6 +111,7 @@ function App() {
       setIsWaitingForResponse(false);
     }
   };
+
 
 
   const handleChatSubmit = async (e) => {
