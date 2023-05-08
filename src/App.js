@@ -6,7 +6,8 @@ import { TextField, Box, Button } from "@mui/material";
 import { LiveProvider, LivePreview, LiveError } from "react-live";
 import Draggable from "react-draggable";
 
-const API_KEY = "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";
+const API_KEY = process.env.OPENAI_API_KEY;
+
 
 const initialCode = `
 function LandingPage() {
