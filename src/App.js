@@ -6,7 +6,7 @@ import { TextField, Box, Button } from "@mui/material";
 import { LiveProvider, LivePreview, LiveError } from "react-live";
 import Draggable from "react-draggable";
 
-const API_KEY = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
+const API_KEY = process.env.REACT_APP_API_KEY;
 
 
 
