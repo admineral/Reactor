@@ -8,7 +8,7 @@ This project is a React-based live code editor integrated with OpenAI's ChatGPT 
 - React-Live for real-time rendering of React components
 - OpenAI's ChatGPT API integration for code suggestions
 - Interactive chat interface for seamless communication with ChatGPT
-- Draggable divider for adjusting the code editor and preview area sizes
+
 
 ## Deploying on Vercel
 
