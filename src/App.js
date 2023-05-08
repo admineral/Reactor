@@ -3,11 +3,10 @@ import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-jsx";
 import "ace-builds/src-noconflict/theme-monokai";
 import { TextField, Box, Button } from "@mui/material";
-import axios from "axios";
 import { LiveProvider, LivePreview, LiveError } from "react-live";
 import Draggable from "react-draggable";
 
-const API_KEY = "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";
+const API_KEY = "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";
 
 const initialCode = `
 function LandingPage() {
@@ -97,9 +96,13 @@ function App() {
     try {
       const formattedPrompt = `I am using react-live with AceEditor to build a web application. My current code is:\n${code}\n\nUser: ${prompt}\n\nChatGPT, please provide me the code to achieve this, answer with full code:`;
 
-      const response = await axios.post(
-        'https://api.openai.com/v1/engines/text-davinci-003/completions',
-        {
+      const response = await fetch('https://api.openai.com/v1/engines/text-davinci-003/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${API_KEY}`,
+        },
+        body: JSON.stringify({
           prompt: formattedPrompt,
           max_tokens: 2000,
           n: 1,
@@ -108,17 +111,13 @@ function App() {
           top_p: 1,
           frequency_penalty: 0,
           presence_penalty: 0,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${API_KEY}`,
-          },
-        }
-      );
+        }),
+      });
 
-      if (response.data.choices && response.data.choices.length > 0) {
-        const chatGptResponse = response.data.choices[0].text.trim();
+      const data = await response.json();
+
+      if (data.choices && data.choices.length > 0) {
+        const chatGptResponse = data.choices[0].text.trim();
         setMessages([...messages, { sender: 'ChatGPT', text: chatGptResponse }]);
         // Update the code based on the ChatGPT response
         // You can add logic to parse the response and update the code accordingly
