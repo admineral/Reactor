@@ -36,6 +36,7 @@ To deploy this app on Vercel, follow these steps:
 
 
 
+
 ## Running the app locally
 
 To run this app locally, follow these steps:
@@ -72,6 +73,9 @@ npm start
 
 The app should now be running at `http://localhost:3000`.
 
+
+
+
 ## Creating the React app from scratch
 
 To create a similar React app from scratch, follow these steps:
@@ -100,8 +104,11 @@ cd reactor
 npm install react-ace ace-builds @mui/material react-live react-draggable
 ```
 
-5. Replace the contents of `src/App.js` with the code provided in the question
+5. Replace the contents of `src/App.js` with the code provided in the Repo.
+
 6. Follow the instructions under "Running the app locally" to set up the environment variables and run the app
+
+
 
 ## Contributing
 
