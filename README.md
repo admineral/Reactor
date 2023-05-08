@@ -98,13 +98,14 @@ create-react-app reactor
 cd reactor
 ```
 
+
 4. Install the necessary dependencies:
 
 ```
 npm install react-ace ace-builds @mui/material react-live react-draggable
 ```
 
-5. Replace the contents of `src/App.js` with the code provided in the Repo.
+or:
 
 6. Follow the instructions under "Running the app locally" to set up the environment variables and run the app
 
