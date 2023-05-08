@@ -6,6 +6,8 @@ This project is a React-based live code editor integrated with OpenAI's ChatGPT 
 ## Live Demo
 The live demo of the app is available at [https://reactor-phi.vercel.app](https://reactor-phi.vercel.app).
 
+![App Screenshot](images/Reactor.png)
+
 
 ## Features
 
