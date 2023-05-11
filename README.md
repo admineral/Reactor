@@ -62,7 +62,7 @@ npm install
 4. Create a `.env` file in the root of the project directory and add your OpenAI API key:
 
 ```
-REACT_APP_OPENAI_API_KEY=your-api-key
+REACT_APP_API_KEY=your-api-key
 ```
 
 5. Start the development server:
@@ -115,6 +115,3 @@ or:
 
 Contributions are always welcome! Feel free to submit a pull request, create an issue, or suggest new features.
 
-## License
-
-This project is licensed under the MIT License.
