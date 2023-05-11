@@ -31,7 +31,7 @@ To deploy this app on Vercel, follow these steps:
 2. Sign up for a [Vercel account](https://vercel.com/signup) if you don't have one
 3. Connect your GitHub account with Vercel
 4. Import the forked repository as a new project on Vercel
-5. Add your `REACT_APP_OPENAI_API_KEY` as an environment variable in the Vercel project settings
+5. Add your `REACT_APP_API_KEY` as an environment variable in the Vercel project settings
 6. Deploy your project
 
 
