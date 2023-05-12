@@ -8,7 +8,7 @@ The live demo of the app is available at [https://reactor-phi.vercel.app](https:
 
 
 <a href="https://reactor-phi.vercel.app">
-  <img src="images/Reactor.png" alt="App Screenshot" width="600px">
+  <img src="images/Reactor.gif" alt="App Screenshot" width="600px">
 </a>
 
 
