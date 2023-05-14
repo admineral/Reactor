@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from "react";
-import AceEditor from "react-ace";
-import "ace-builds/src-noconflict/mode-jsx";
-import "ace-builds/src-noconflict/theme-monokai";
-import { TextField, Box, Button } from "@mui/material";
-import { LiveProvider, LivePreview, LiveError } from "react-live";
+import { LiveProvider, LiveEditor, LivePreview, LiveError } from "react-live";
 import Draggable from "react-draggable";
+import { AppBar, Box, TextField, Toolbar, IconButton, Typography, Button, Grid, Container } from "@mui/material";
+import { Drawer, List, ListItem, ListItemText } from '@mui/material';
+import styled from '@emotion/styled';
 
 const API_KEY = process.env.REACT_APP_API_KEY;
-
-
 
 const initialCode = `
 function LandingPage() {
@@ -61,12 +58,11 @@ function App() {
   const [messages, setMessages] = useState([]);
   const [isWaitingForResponse, setIsWaitingForResponse] = useState(false);
   const [previousCode, setPreviousCode] = useState("");
-
-
-
   const [editorWidth, setEditorWidth] = useState('50%');
-
   const [showFullResponse, setShowFullResponse] = useState(false);
+  const chatHistoryRef = React.useRef(null);
+  const windowHeight = window.innerHeight;
+  const chatboxHeight = 200;
 
   const applyCode = (newCode) => {
   setPreviousCode(code);
@@ -82,12 +78,15 @@ function App() {
     }
   };
 
-
-
-  const toggleFullResponse = () => {
-    setShowFullResponse(!showFullResponse);
+  const toggleFullResponse = (index) => {
+    setMessages(messages.map((message, i) => {
+      if(i === index) {
+        return {...message, showFullResponse: !message.showFullResponse};
+      } else {
+        return message;
+      }
+    }));
   };
-
 
   const onDrag = (e, ui) => {
     const newWidth = ui.node.previousSibling.clientWidth + ui.deltaX;
@@ -120,9 +119,7 @@ function App() {
 
       if (data.choices && data.choices.length > 0) {
         const chatGptResponse = data.choices[0].text.trim();
-        setMessages([...messages, { sender: 'ChatGPT', text: chatGptResponse }]);
-        // Update the code based on the ChatGPT response
-        // You can add logic to parse the response and update the code accordingly
+        setMessages(prevMessages => [...prevMessages, { sender: 'ChatGPT', text: chatGptResponse, showFullResponse: false }]);
         setIsWaitingForResponse(false);
       }
     } catch (error) {
@@ -131,46 +128,64 @@ function App() {
     }
   };
 
-
   const handleChatSubmit = async (e) => {
     e.preventDefault();
-    setMessages([...messages, { sender: "user", text: chatInput }]);
+    setMessages([...messages, { sender: "user", text: chatInput, showFullResponse: false }]);
     setChatInput("");
     setIsWaitingForResponse(true);
     await callChatGptApi(chatInput);
   };
 
+  const liveComponentStyle = {
+    height: '100%',
+    overflow: 'auto',
+  };
+  
+  useEffect(() => {
+    if (chatHistoryRef.current) {
+      const { scrollHeight } = chatHistoryRef.current;
+      chatHistoryRef.current.scrollTo(0, scrollHeight);
+    }
+  }, [messages]);
 
-  const windowHeight = window.innerHeight;
-  const chatboxHeight = 200;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
       <div style={{ display: "flex", height: windowHeight - chatboxHeight }}>
         <div id="editor" style={{ width: editorWidth, position: "relative" }}>
-          <AceEditor
-            mode="jsx"
-            theme="monokai"
-            fontSize={14}
-            value={code}
-            onChange={setCode}
-            width="100%"
-            height="100%"
-          />
-          <Draggable axis="x" onDrag={onDrag}>
-            <div
-              style={{
-                cursor: "col-resize",
-                width: "10px",
-                height: "100%",
-                backgroundColor: "gray",
-                zIndex: 1,
-                position: "absolute",
-                top: 0,
-                right: "-5px",
-              }}
-            />
-          </Draggable>
+          <LiveProvider code={code} scope={{ 
+              React, 
+              useState, 
+              useEffect, 
+              AppBar, 
+              Box, 
+              TextField, 
+              Toolbar, 
+              IconButton, 
+              Typography, 
+              Button, 
+              Grid, 
+              Container,
+              Drawer, List, ListItem, ListItemText,
+              styled 
+            }}
+          >
+            <LiveEditor onChange={setCode} style={liveComponentStyle} />
+            <Draggable axis="x" onDrag={onDrag}>
+              <div
+                style={{
+                  cursor: "col-resize",
+                  width: "10px",
+                  height: "100%",
+                  backgroundColor: "gray",
+                  zIndex: 1,
+                  position: "absolute",
+                  top: 0,
+                  right: "-5px",
+                }}
+              />
+            </Draggable>
+          </LiveProvider>
         </div>
         <Box
           display="flex"
@@ -179,14 +194,30 @@ function App() {
           borderColor="grey.300"
           overflow="auto"
         >
-          <LiveProvider code={code} scope={{ React, useState, useEffect }}>
-            <LivePreview />
+          <LiveProvider code={code} scope={{ 
+              React, 
+              useState, 
+              useEffect, 
+              AppBar, 
+              Box, 
+              TextField, 
+              Toolbar, 
+              IconButton, 
+              Typography, 
+              Button, 
+              Grid, 
+              Container,
+              Drawer, List, ListItem, ListItemText,
+              styled 
+            }}
+          >
+            <LivePreview style={liveComponentStyle}/>
             <LiveError />
           </LiveProvider>
         </Box>
       </div>
-      <Box display="flex" flexDirection="column" height={chatboxHeight} border={1} borderColor="grey.300" overflow="auto">
-        <Box flexGrow={1} p={1}>
+      <Box display="flex" flexDirection="column" height={chatboxHeight} border={1} borderColor="grey.300">
+        <Box flexGrow={1} p={1} overflow="auto" style={{ maxHeight: "calc(100% - 56px)" }} ref={chatHistoryRef}>
           {messages.map((message, index) => (
             <div key={index} style={{ marginBottom: "0.5rem" }}>
               <strong>{message.sender}:</strong>
@@ -206,12 +237,12 @@ function App() {
                     variant="outlined"
                     color="primary"
                     size="small"
-                    onClick={toggleFullResponse}
+                    onClick={() => toggleFullResponse(index)}
                     style={{ marginLeft: "0.5rem" }}
                   >
-                    {showFullResponse ? "Hide Full Response" : "Show Full Response"}
+                    {message.showFullResponse ? "Hide Full Response" : "Show Full Response"}
                   </Button>
-                  {showFullResponse && (
+                  {message.showFullResponse && (
                     <pre style={{ whiteSpace: "pre-wrap", marginTop: "0.5rem" }}>
                       {message.text}
                     </pre>
@@ -228,31 +259,30 @@ function App() {
         </Box>
         <form onSubmit={handleChatSubmit}>
           <Box display="flex" p={1}>
-  <TextField
-    fullWidth
-    value={chatInput}
-    onChange={(e) => setChatInput(e.target.value)}
-    variant="outlined"
-    size="small"
-    label="Type your message"
-  />
-  <Button type="submit" variant="contained" color="primary" style={{ marginLeft: "1rem" }}>
-    Send
-  </Button>
-  <Button
-    variant="contained"
-    color="secondary"
-    style={{ marginLeft: "1rem" }}
-    onClick={revertCode}
-  >
-    Revert Code
-  </Button>
-</Box>
+            <TextField
+              fullWidth
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              variant="outlined"
+              size="small"
+              label="Type your message"
+            />
+            <Button type="submit" variant="contained" color="primary" style={{ marginLeft: "1rem" }}>
+              Send
+            </Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              style={{ marginLeft: "1rem" }}
+              onClick={revertCode}
+            >
+              Revert Code
+            </Button>
+          </Box>
         </form>
       </Box>
     </div>
   );
-
 }
 
 export default App;
