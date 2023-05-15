@@ -85,7 +85,7 @@ function App() {
   const [showFullResponse, setShowFullResponse] = useState(false);
   const chatHistoryRef = React.useRef(null);
   const windowHeight = window.innerHeight;
-  const chatboxHeight = 200;
+  const chatboxHeight = 700;
 
   //setup tabs for preview pane + Chat GPT screen
   const [value, setValue] = React.useState(0);
@@ -278,6 +278,7 @@ function App() {
             </TabPanel>
             <TabPanel value={value} index={1}>
               <ChatBoxContainer>
+            {/* <Box display="flex" flexDirection="column" height={chatboxHeight} border={1} borderColor="grey.300" overflow="auto"> */}
               <Box flexGrow={1} p={1} overflow="auto" style={{maxHeight: "calc(100% - 56px)" }} ref={chatHistoryRef}>
                 {messages.map((message, index) => (
                   <div key={index} style={{ marginBottom: "0.5rem" }}>

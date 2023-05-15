@@ -181,6 +181,18 @@ export const TabContainer = styled.div`
   box-sizing: border-box;
 `;
 
+export const ChatInputStyle = {
+  outline: 'none',
+  paddingLeft: '15px',
+  height: "35px",
+  width: "70%",
+  backgroundColor: "#292c2f",
+  borderRadius: "4px",
+  fontSize: "16px",
+  color: "white",
+  fontFamily: "Inter",
+}
+
 export const PreviewSectionContainer = styled.div`
   height: 800px;
   width: 54.77%;
@@ -194,27 +206,19 @@ export const PreviewSectionContainer = styled.div`
   background-color: #202123;
 `;
 
-export const ChatInputStyle = {
-  outline: 'none',
-  paddingLeft: '15px',
-  height: "35px",
-  width: "70%",
-  backgroundColor: "#292c2f",
-  borderRadius: "4px",
-  fontSize: "16px",
-  color: "white",
-  fontFamily: "Inter",
-}
   
 export const ChatBoxContainer = styled.div`
   height: 700px;
-  width: 913px;
+  width: 100%;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
   position: relative;
   display: flex;
   flex-direction: column;
   border-radius: 12px;
   box-sizing: border-box;
   background-color: #202123;
+  overflow: auto;
 `;
 
 // export const PreviewTitle = styled.div`
