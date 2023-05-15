@@ -2,8 +2,29 @@ import React, { useState, useEffect } from "react";
 import { LiveProvider, LiveEditor, LivePreview, LiveError } from "react-live";
 import Draggable from "react-draggable";
 import { AppBar, Box, TextField, Toolbar, IconButton, Typography, Button, Grid, Container } from "@mui/material";
-import { Drawer, List, ListItem, ListItemText } from '@mui/material';
-import styled from '@emotion/styled';
+import { Drawer, List, ListItem, ListItemText} from '@mui/material';
+import { Input, Tab, Tabs, TabList} from '@mui/material';
+import styled from 'styled-components';
+import './App.css'
+import TabPanel from './Tabs';
+import a11yProps from './Tabs';
+
+//import styled components from view
+import { ChatBoxContainer, TabContainer, ViewContainerRoot } from "./view";
+import { HeaderContainer } from './view';
+import { LogoContainer } from './view';
+import { LogoText } from './view';
+import { LogoImage } from './view';
+import { CodeEditorRectangle } from './view';
+import { LiveCodeContainer } from "./view";
+import { FileNameContainer } from './view';
+import { FileNameInputStyle } from './view';
+import { FirstRectangle } from './view';
+import { SecondRectangle } from './view';
+import { ThirdRectangle } from './view';
+import { LivePreviewContainer } from "./view";
+import { PreviewSectionContainer } from './view';
+import { ChatInputStyle } from './view';
 
 const API_KEY = process.env.REACT_APP_API_KEY;
 
@@ -64,6 +85,14 @@ function App() {
   const windowHeight = window.innerHeight;
   const chatboxHeight = 200;
 
+  //setup tabs for preview pane + Chat GPT screen
+  const [value, setValue] = React.useState(0);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+
   const applyCode = (newCode) => {
   setPreviousCode(code);
   setCode(newCode);
@@ -86,11 +115,6 @@ function App() {
         return message;
       }
     }));
-  };
-
-  const onDrag = (e, ui) => {
-    const newWidth = ui.node.previousSibling.clientWidth + ui.deltaX;
-    setEditorWidth(`${newWidth}px`);
   };
 
   const callChatGptApi = async (prompt) => {
@@ -117,9 +141,10 @@ function App() {
 
       const data = await response.json();
 
+      await new Promise((resolve) => setTimeout(resolve, 10));
       if (data.choices && data.choices.length > 0) {
         const chatGptResponse = data.choices[0].text.trim();
-        setMessages(prevMessages => [...prevMessages, { sender: 'ChatGPT', text: chatGptResponse, showFullResponse: false }]);
+        setMessages(prevMessages => [...prevMessages, { sender: 'ChatGPT', text: " " + chatGptResponse, showFullResponse: false }]);
         setIsWaitingForResponse(false);
       }
     } catch (error) {
@@ -130,10 +155,11 @@ function App() {
 
   const handleChatSubmit = async (e) => {
     e.preventDefault();
-    setMessages([...messages, { sender: "user", text: chatInput, showFullResponse: false }]);
+    setMessages([...messages, { sender: "user", text: " " + chatInput, showFullResponse: false }]);
     setChatInput("");
     setIsWaitingForResponse(true);
     await callChatGptApi(chatInput);
+    
   };
 
   const liveComponentStyle = {
@@ -148,11 +174,17 @@ function App() {
     }
   }, [messages]);
 
-
+  document.body.style.backgroundColor = "#141414";
+  document.body.style.margin = "0";
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
-      <div style={{ display: "flex", height: windowHeight - chatboxHeight }}>
-        <div id="editor" style={{ width: editorWidth, position: "relative" }}>
+    <><div>
+      <ViewContainerRoot>
+      <HeaderContainer>
+        <LogoContainer>
+          <LogoText>Reactonauts</LogoText>
+          <LogoImage src="https://file.rendit.io/n/45hcMBJKBqDxVfYlovlB.png" />
+        </LogoContainer>
+        <CodeEditorRectangle>
           <LiveProvider code={code} scope={{ 
               React, 
               useState, 
@@ -170,118 +202,295 @@ function App() {
               styled 
             }}
           >
-            <LiveEditor onChange={setCode} style={liveComponentStyle} />
-            <Draggable axis="x" onDrag={onDrag}>
-              <div
-                style={{
-                  cursor: "col-resize",
-                  width: "10px",
-                  height: "100%",
-                  backgroundColor: "gray",
-                  zIndex: 1,
-                  position: "absolute",
-                  top: 0,
-                  right: "-5px",
-                }}
-              />
-            </Draggable>
+            <FirstRectangle>
+            <LiveCodeContainer style={{height: '680px', width: '100%', borderRadius: '12px'}}>
+              <LiveEditor onChange={setCode} style={{
+                  borderRadius: '12px',
+                  boxSizing: 'border-box',
+                  fontFamily: 'monospace',
+                  fontSize: '16px'}} />
+              </LiveCodeContainer>
+                          
+            </FirstRectangle>
           </LiveProvider>
-        </div>
-        <Box
-          display="flex"
-          flex={1}
-          border={1}
-          borderColor="grey.300"
-          overflow="auto"
-        >
-          <LiveProvider code={code} scope={{ 
-              React, 
-              useState, 
-              useEffect, 
-              AppBar, 
-              Box, 
-              TextField, 
-              Toolbar, 
-              IconButton, 
-              Typography, 
-              Button, 
-              Grid, 
+          <SecondRectangle />
+          <ThirdRectangle />
+          <FileNameContainer>
+            <Input type = 'text' style={FileNameInputStyle} placeholder="File Name" />
+          </FileNameContainer>
+        </CodeEditorRectangle>
+      </HeaderContainer>
+    <LiveProvider code={code} scope={{
+              React,
+              useState,
+              useEffect,
+              AppBar,
+              Box,
+              TextField,
+              Toolbar,
+              IconButton,
+              Typography,
+              Button,
+              Grid,
               Container,
               Drawer, List, ListItem, ListItemText,
-              styled 
+              styled
             }}
-          >
-            <LivePreview style={liveComponentStyle}/>
-            <LiveError />
-          </LiveProvider>
-        </Box>
-      </div>
-      <Box display="flex" flexDirection="column" height={chatboxHeight} border={1} borderColor="grey.300">
-        <Box flexGrow={1} p={1} overflow="auto" style={{ maxHeight: "calc(100% - 56px)" }} ref={chatHistoryRef}>
-          {messages.map((message, index) => (
-            <div key={index} style={{ marginBottom: "0.5rem" }}>
-              <strong>{message.sender}:</strong>
-              {message.sender !== "ChatGPT" && message.text}
-              {message.sender === "ChatGPT" && (
-                <>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    size="small"
-                    onClick={() => applyCode(message.text)}
-                    style={{ marginLeft: "1rem" }}
-                  >
-                    Apply Code
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    size="small"
-                    onClick={() => toggleFullResponse(index)}
-                    style={{ marginLeft: "0.5rem" }}
-                  >
-                    {message.showFullResponse ? "Hide Full Response" : "Show Full Response"}
-                  </Button>
-                  {message.showFullResponse && (
-                    <pre style={{ whiteSpace: "pre-wrap", marginTop: "0.5rem" }}>
-                      {message.text}
-                    </pre>
-                  )}
-                </>
-              )}
-            </div>
-          ))}
-          {isWaitingForResponse && (
-            <div>
-              <strong>ChatGPT:</strong> thinking...
-            </div>
-          )}
-        </Box>
-        <form onSubmit={handleChatSubmit}>
-          <Box display="flex" p={1}>
-            <TextField
-              fullWidth
-              value={chatInput}
-              onChange={(e) => setChatInput(e.target.value)}
-              variant="outlined"
-              size="small"
-              label="Type your message"
-            />
-            <Button type="submit" variant="contained" color="primary" style={{ marginLeft: "1rem" }}>
-              Send
-            </Button>
-            <Button
-              variant="contained"
-              color="secondary"
-              style={{ marginLeft: "1rem" }}
-              onClick={revertCode}
             >
-              Revert Code
-            </Button>
-          </Box>
-        </form>
-      </Box>
+          <PreviewSectionContainer>
+              <SecondRectangle />
+              <ThirdRectangle />
+              <TabContainer>
+                <Tabs value={value} onChange={handleChange} aria-label="Tabs" TabIndicatorProps={{ style: { backgroundColor: "#90caf9"}}}>
+                  <Tab label="Preview" {...a11yProps(0)} sx={{
+                          typography: 'Inter',
+                          color: 'white',
+                          fontFamily: "Inter",
+                          '&.Mui-selected': {
+                            color: '#90caf9',
+                            fontFamily: "Inter"
+                          }}}/>
+                  <Tab label="Chat GPT" {...a11yProps(1)} sx={{
+                          typography: 'Inter',
+                          color: 'white',
+                          fontFamily: "Inter",
+                          '&.Mui-selected': {
+                            color: '#90caf9',
+                            fontFamily: "Inter"
+                          }}} />
+                </Tabs>
+              </TabContainer>
+                
+            <TabPanel value={value} index={0}>
+              <LivePreviewContainer>
+                  <LivePreview style={{ liveComponentStyle }} />
+              </LivePreviewContainer>
+              <LiveError />
+            </TabPanel>
+            <TabPanel value={value} index={1}>
+              <ChatBoxContainer>
+              <Box flexGrow={1} p={1} overflow="auto" style={{maxHeight: "calc(100% - 56px)" }} ref={chatHistoryRef}>
+                {messages.map((message, index) => (
+                  <div key={index} style={{ marginBottom: "0.5rem" }}>
+                    <strong>{message.sender}:</strong>
+                    {message.sender !== "ChatGPT" && message.text}
+                    {message.sender === "ChatGPT" && (
+                      <>
+                        <Button
+                          variant="outlined"
+                          color="primary"
+                          size="small"
+                          onClick={() => applyCode(message.text)}
+                          style={{ marginLeft: "1rem" }}
+                        >
+                          Apply Code
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          color="primary"
+                          size="small"
+                          onClick={() => toggleFullResponse(index)}
+                          style={{ marginLeft: "0.5rem" }}
+                        >
+                          {message.showFullResponse ? "Hide Full Response" : "Show Full Response"}
+                        </Button>
+                        {message.showFullResponse && (
+                          <pre style={{ whiteSpace: "pre-wrap", marginTop: "0.5rem" }}>
+                            {message.text}
+                          </pre>
+                        )}
+                      </>
+                    )}
+                  </div>
+                ))}
+                {isWaitingForResponse && (
+                  <div>
+                    <strong>ChatGPT:</strong> thinking...
+                  </div>
+                )}
+              </Box>
+              
+          <form onSubmit={handleChatSubmit}>
+            <Box p={1} style={{ display: 'flex', justifyContent: 'center', placeItems: 'center'}}>
+              <Button
+                  style={{ padding: 0,
+                    border: 'none',
+                    background: 'none',
+                    cursor: 'pointer', }}
+                  onClick={revertCode}
+                >
+                  <img src="https://file.rendit.io/n/mNo3dAabgi5Ose8Uy7Ob.png"
+                    alt="Undo Image"
+                    style={{
+                      height: '25px',
+                      width: '25px',
+                    }}/>
+                </Button>
+
+              <input 
+                type="text"
+                placeholder="Type a message"
+                style={ChatInputStyle} 
+                value={chatInput} 
+                onChange={(e) => setChatInput(e.target.value)} />
+
+              
+              <Button type="submit"  style={{
+                      padding: 0,
+                      border: 'none',
+                      background: 'none',
+                      cursor: 'pointer',
+                    }}>
+                      <img src="https://file.rendit.io/n/q5Axl43rqp5SyWyIcZJ1.png"
+                        alt="Send Image"
+                        style={{
+                          height: '25px',
+                          width: '25px',
+                        }}
+                      />
+              </Button>
+              
+            </Box>
+          </form>
+          </ChatBoxContainer>
+            </TabPanel>
+            </PreviewSectionContainer>
+      </LiveProvider>
+      
+    </ViewContainerRoot>
     </div>
+
+    {/* <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+        <div style={{ display: "flex", height: windowHeight - chatboxHeight }}>
+          <div id="editor" style={{ width: editorWidth, position: "relative" }}>
+            <LiveProvider code={code} scope={{
+              React,
+              useState,
+              useEffect,
+              AppBar,
+              Box,
+              TextField,
+              Toolbar,
+              IconButton,
+              Typography,
+              Button,
+              Grid,
+              Container,
+              Drawer, List, ListItem, ListItemText,
+              styled
+            }}
+            >
+              <LiveEditor onChange={setCode} style={liveComponentStyle} />
+              <Draggable axis="x" onDrag={onDrag}>
+                <div
+                  style={{
+                    cursor: "col-resize",
+                    width: "10px",
+                    height: "100%",
+                    backgroundColor: "gray",
+                    zIndex: 1,
+                    position: "absolute",
+                    top: 0,
+                    right: "-5px",
+                  }} />
+              </Draggable>
+            </LiveProvider>
+          </div>
+          <Box
+            display="flex"
+            flex={1}
+            border={1}
+            borderColor="grey.300"
+            overflow="auto"
+          >
+            <LiveProvider code={code} scope={{
+              React,
+              useState,
+              useEffect,
+              AppBar,
+              Box,
+              TextField,
+              Toolbar,
+              IconButton,
+              Typography,
+              Button,
+              Grid,
+              Container,
+              Drawer, List, ListItem, ListItemText,
+              styled
+            }}
+            >
+              <LivePreview style={liveComponentStyle} />
+              <LiveError />
+            </LiveProvider>
+          </Box>
+        </div>
+        <Box display="flex" flexDirection="column" height={chatboxHeight} border={1} borderColor="grey.300">
+          <Box flexGrow={1} p={1} overflow="auto" style={{ maxHeight: "calc(100% - 56px)" }} ref={chatHistoryRef}>
+            {messages.map((message, index) => (
+              <div key={index} style={{ marginBottom: "0.5rem" }}>
+                <strong>{message.sender}:</strong>
+                {message.sender !== "ChatGPT" && message.text}
+                {message.sender === "ChatGPT" && (
+                  <>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      size="small"
+                      onClick={() => applyCode(message.text)}
+                      style={{ marginLeft: "1rem" }}
+                    >
+                      Apply Code
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      size="small"
+                      onClick={() => toggleFullResponse(index)}
+                      style={{ marginLeft: "0.5rem" }}
+                    >
+                      {message.showFullResponse ? "Hide Full Response" : "Show Full Response"}
+                    </Button>
+                    {message.showFullResponse && (
+                      <pre style={{ whiteSpace: "pre-wrap", marginTop: "0.5rem" }}>
+                        {message.text}
+                      </pre>
+                    )}
+                  </>
+                )}
+              </div>
+            ))}
+            {isWaitingForResponse && (
+              <div>
+                <strong>ChatGPT:</strong> thinking...
+              </div>
+            )}
+          </Box>
+          <form onSubmit={handleChatSubmit}>
+            <Box display="flex" p={1}>
+              <TextField
+                fullWidth
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
+                variant="outlined"
+                size="small"
+                label="Type your message" />
+              <Button type="submit" variant="contained" color="primary" style={{ marginLeft: "1rem" }}>
+                Send
+              </Button>
+              <Button
+                variant="contained"
+                color="secondary"
+                style={{ marginLeft: "1rem" }}
+                onClick={revertCode}
+              >
+                Revert Code
+              </Button>
+            </Box>
+          </form>
+        </Box>
+      </div> */}
+    </>
   );
 }
 
