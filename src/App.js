@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { LiveProvider, LiveEditor, LivePreview, LiveError } from "react-live";
-import Draggable from "react-draggable";
+import AceEditor from 'react-ace';
+import 'ace-builds/src-noconflict/mode-jsx';
+import 'ace-builds/src-noconflict/theme-twilight';
+import { LiveProvider, LivePreview, LiveError } from "react-live";
 import { AppBar, Box, TextField, Toolbar, IconButton, Typography, Button, Grid, Container } from "@mui/material";
 import { Drawer, List, ListItem, ListItemText} from '@mui/material';
 import { Input, Tab, Tabs, TabList} from '@mui/material';
@@ -185,34 +187,41 @@ function App() {
           <LogoImage src="https://file.rendit.io/n/45hcMBJKBqDxVfYlovlB.png" />
         </LogoContainer>
         <CodeEditorRectangle>
-          <LiveProvider code={code} scope={{ 
-              React, 
-              useState, 
-              useEffect, 
-              AppBar, 
-              Box, 
-              TextField, 
-              Toolbar, 
-              IconButton, 
-              Typography, 
-              Button, 
-              Grid, 
-              Container,
-              Drawer, List, ListItem, ListItemText,
-              styled 
-            }}
-          >
             <FirstRectangle>
-            <LiveCodeContainer style={{height: '680px', width: '100%', borderRadius: '12px'}}>
-              <LiveEditor onChange={setCode} style={{
-                  borderRadius: '12px',
-                  boxSizing: 'border-box',
-                  fontFamily: 'monospace',
-                  fontSize: '16px'}} />
+            <LiveCodeContainer style={{
+                height: '672px',
+                width: '100%',
+                position: 'relative', // Add this style to enable position adjustment
+                top: '20px', // Adjust the top position as needed
+              }}>
+            <AceEditor
+                name="code-editor"
+                mode="jsx"
+                theme="twilight"
+                value={code}
+                onChange={setCode}
+                borderRadius= '12px'
+                boxSizing= 'border-box'
+                fontFamily= 'monospace'
+                fontSize = "16px"
+                width="99.8%"
+                height="100%"
+                showPrintMargin={true}
+                showGutter={true}
+                highlightActiveLine={true}
+                wrapEnabled={true}
+                setOptions={{
+                  enableBasicAutocompletion: false,
+                  enableLiveAutocompletion: false,
+                  enableSnippets: false,
+                  showLineNumbers: true,
+                  tabSize: 2,
+                  }}
+              />
               </LiveCodeContainer>
                           
             </FirstRectangle>
-          </LiveProvider>
+          {/* </LiveProvider> */}
           <SecondRectangle />
           <ThirdRectangle />
           <FileNameContainer>
@@ -329,7 +338,7 @@ function App() {
 
               <input 
                 type="text"
-                placeholder="Type a message"
+                placeholder="Type a message (ex: make button bigger)"
                 style={ChatInputStyle} 
                 value={chatInput} 
                 onChange={(e) => setChatInput(e.target.value)} />

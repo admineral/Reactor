@@ -112,8 +112,10 @@ export const CodeEditorRectangle = styled.div`
 export const LiveCodeContainer = styled.div`
 width: 100%;
 position: relative;
+top: 30px,
 height: 672; /* adjust this value as needed */
-border-radius: 12px;
+// border-radius: 12px;
+// padding: 30px 0px 0px 0px;
 overflow: auto;
 `;
 
