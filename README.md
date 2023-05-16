@@ -10,11 +10,6 @@ This project is a React-based live code editor integrated with OpenAI's ChatGPT 
 [https://reactor-phi.vercel.app](https://reactor-phi.vercel.app).
 <img src="images/Reactor_new.gif" alt="Reactor" width="800px">
 
-
-
-# 🚀 Reactor Plugin for ChatGPT 🚀
-<img src="images/ChatGPT-Plugin.gif" alt="Plugin" width="800px">
-
 ## Features
 
 - Live code editing using Ace Editor
@@ -23,7 +18,14 @@ This project is a React-based live code editor integrated with OpenAI's ChatGPT 
 - Interactive chat interface for seamless communication with ChatGPT
 
 
-## Deploying on Vercel
+
+## 🚀 Reactor Plugin for ChatGPT 🚀
+<img src="images/ChatGPT-Plugin.gif" alt="Plugin" width="800px">
+https://github.com/admineral/Reactor-ChatGPT-Plugin
+
+
+
+# Deploying on Vercel
 
 To deploy this app on Vercel, follow these steps:
 
@@ -37,7 +39,7 @@ To deploy this app on Vercel, follow these steps:
 
 
 
-## Running the app locally
+# Running the app locally
 
 To run this app locally, follow these steps:
 
@@ -76,7 +78,7 @@ The app should now be running at `http://localhost:3000`.
 
 
 
-## Creating the React app from scratch
+# Creating the React app from scratch
 
 To create a similar React app from scratch, follow these steps:
 
