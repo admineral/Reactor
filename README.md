@@ -9,13 +9,10 @@ The live demo of  the app
 
 ## v_2
 
-[https://reactor-git-new-design-admineral.vercel.app](https://reactor-phi.vercel.app).
-<img src="images/Reactor_v2.gif" alt="Reactor" width="800px">
+[Reactor](https://reactor-phi.vercel.app).
+<img src="images/Reactor_new.gif" alt="Reactor" width="800px">
 
-v_1
-[https://reactor-phi.vercel.app](https://reactor-phi.vercel.app).
 
-<img src="images/reactor_gif.gif" alt="Reactor" width="800px">
 
 
 
