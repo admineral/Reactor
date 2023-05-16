@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+<<<<<<< HEAD
 import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/mode-jsx';
 import 'ace-builds/src-noconflict/theme-twilight';
@@ -27,6 +28,13 @@ import { ThirdRectangle } from './view';
 import { LivePreviewContainer } from "./view";
 import { PreviewSectionContainer } from './view';
 import { ChatInputStyle } from './view';
+=======
+import { LiveProvider, LiveEditor, LivePreview, LiveError } from "react-live";
+import Draggable from "react-draggable";
+import { AppBar, Box, TextField, Toolbar, IconButton, Typography, Button, Grid, Container } from "@mui/material";
+import { Drawer, List, ListItem, ListItemText } from '@mui/material';
+import styled from '@emotion/styled';
+>>>>>>> main
 
 const API_KEY = process.env.REACT_APP_API_KEY;
 
@@ -85,6 +93,7 @@ function App() {
   const [showFullResponse, setShowFullResponse] = useState(false);
   const chatHistoryRef = React.useRef(null);
   const windowHeight = window.innerHeight;
+<<<<<<< HEAD
   const chatboxHeight = 700;
 
   //setup tabs for preview pane + Chat GPT screen
@@ -94,6 +103,9 @@ function App() {
     setValue(newValue);
   };
 
+=======
+  const chatboxHeight = 200;
+>>>>>>> main
 
   const applyCode = (newCode) => {
   setPreviousCode(code);
@@ -119,6 +131,14 @@ function App() {
     }));
   };
 
+<<<<<<< HEAD
+=======
+  const onDrag = (e, ui) => {
+    const newWidth = ui.node.previousSibling.clientWidth + ui.deltaX;
+    setEditorWidth(`${newWidth}px`);
+  };
+
+>>>>>>> main
   const callChatGptApi = async (prompt) => {
     try {
       const formattedPrompt = `I am using react-live with AceEditor to build a web application. My current code is:\n${code}\n\nUser: ${prompt}\n\nChatGPT, please provide me the code to achieve this, answer with full code:`;
@@ -143,10 +163,16 @@ function App() {
 
       const data = await response.json();
 
+<<<<<<< HEAD
       await new Promise((resolve) => setTimeout(resolve, 10));
       if (data.choices && data.choices.length > 0) {
         const chatGptResponse = data.choices[0].text.trim();
         setMessages(prevMessages => [...prevMessages, { sender: 'ChatGPT', text: " " + chatGptResponse, showFullResponse: false }]);
+=======
+      if (data.choices && data.choices.length > 0) {
+        const chatGptResponse = data.choices[0].text.trim();
+        setMessages(prevMessages => [...prevMessages, { sender: 'ChatGPT', text: chatGptResponse, showFullResponse: false }]);
+>>>>>>> main
         setIsWaitingForResponse(false);
       }
     } catch (error) {
@@ -157,11 +183,18 @@ function App() {
 
   const handleChatSubmit = async (e) => {
     e.preventDefault();
+<<<<<<< HEAD
     setMessages([...messages, { sender: "user", text: " " + chatInput, showFullResponse: false }]);
     setChatInput("");
     setIsWaitingForResponse(true);
     await callChatGptApi(chatInput);
     
+=======
+    setMessages([...messages, { sender: "user", text: chatInput, showFullResponse: false }]);
+    setChatInput("");
+    setIsWaitingForResponse(true);
+    await callChatGptApi(chatInput);
+>>>>>>> main
   };
 
   const liveComponentStyle = {
@@ -176,6 +209,7 @@ function App() {
     }
   }, [messages]);
 
+<<<<<<< HEAD
   document.body.style.backgroundColor = "#141414";
   document.body.style.margin = "0";
   return (
@@ -501,6 +535,142 @@ function App() {
         </Box>
       </div> */}
     </>
+=======
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+      <div style={{ display: "flex", height: windowHeight - chatboxHeight }}>
+        <div id="editor" style={{ width: editorWidth, position: "relative" }}>
+          <LiveProvider code={code} scope={{ 
+              React, 
+              useState, 
+              useEffect, 
+              AppBar, 
+              Box, 
+              TextField, 
+              Toolbar, 
+              IconButton, 
+              Typography, 
+              Button, 
+              Grid, 
+              Container,
+              Drawer, List, ListItem, ListItemText,
+              styled 
+            }}
+          >
+            <LiveEditor onChange={setCode} style={liveComponentStyle} />
+            <Draggable axis="x" onDrag={onDrag}>
+              <div
+                style={{
+                  cursor: "col-resize",
+                  width: "10px",
+                  height: "100%",
+                  backgroundColor: "gray",
+                  zIndex: 1,
+                  position: "absolute",
+                  top: 0,
+                  right: "-5px",
+                }}
+              />
+            </Draggable>
+          </LiveProvider>
+        </div>
+        <Box
+          display="flex"
+          flex={1}
+          border={1}
+          borderColor="grey.300"
+          overflow="auto"
+        >
+          <LiveProvider code={code} scope={{ 
+              React, 
+              useState, 
+              useEffect, 
+              AppBar, 
+              Box, 
+              TextField, 
+              Toolbar, 
+              IconButton, 
+              Typography, 
+              Button, 
+              Grid, 
+              Container,
+              Drawer, List, ListItem, ListItemText,
+              styled 
+            }}
+          >
+            <LivePreview style={liveComponentStyle}/>
+            <LiveError />
+          </LiveProvider>
+        </Box>
+      </div>
+      <Box display="flex" flexDirection="column" height={chatboxHeight} border={1} borderColor="grey.300">
+        <Box flexGrow={1} p={1} overflow="auto" style={{ maxHeight: "calc(100% - 56px)" }} ref={chatHistoryRef}>
+          {messages.map((message, index) => (
+            <div key={index} style={{ marginBottom: "0.5rem" }}>
+              <strong>{message.sender}:</strong>
+              {message.sender !== "ChatGPT" && message.text}
+              {message.sender === "ChatGPT" && (
+                <>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    size="small"
+                    onClick={() => applyCode(message.text)}
+                    style={{ marginLeft: "1rem" }}
+                  >
+                    Apply Code
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    size="small"
+                    onClick={() => toggleFullResponse(index)}
+                    style={{ marginLeft: "0.5rem" }}
+                  >
+                    {message.showFullResponse ? "Hide Full Response" : "Show Full Response"}
+                  </Button>
+                  {message.showFullResponse && (
+                    <pre style={{ whiteSpace: "pre-wrap", marginTop: "0.5rem" }}>
+                      {message.text}
+                    </pre>
+                  )}
+                </>
+              )}
+            </div>
+          ))}
+          {isWaitingForResponse && (
+            <div>
+              <strong>ChatGPT:</strong> thinking...
+            </div>
+          )}
+        </Box>
+        <form onSubmit={handleChatSubmit}>
+          <Box display="flex" p={1}>
+            <TextField
+              fullWidth
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              variant="outlined"
+              size="small"
+              label="Type your message"
+            />
+            <Button type="submit" variant="contained" color="primary" style={{ marginLeft: "1rem" }}>
+              Send
+            </Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              style={{ marginLeft: "1rem" }}
+              onClick={revertCode}
+            >
+              Revert Code
+            </Button>
+          </Box>
+        </form>
+      </Box>
+    </div>
+>>>>>>> main
   );
 }
 
