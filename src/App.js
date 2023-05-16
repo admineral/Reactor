@@ -183,7 +183,7 @@ function App() {
       <ViewContainerRoot>
       <HeaderContainer>
         <LogoContainer>
-          <LogoText>Reactonauts</LogoText>
+          <LogoText>Reactonaut</LogoText>
           <LogoImage src="https://file.rendit.io/n/45hcMBJKBqDxVfYlovlB.png" />
         </LogoContainer>
         <CodeEditorRectangle>

@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import backgroundImage from './assets/stars.gif';
 import { LiveProvider, LiveEditor, LivePreview, LiveError } from "react-live";
 import App from './App';
 
@@ -57,6 +58,9 @@ export const ViewContainerRoot = styled.div`
   padding: 15px 110px 15px 35px;
   box-sizing: border-box;
   background-color: #121214;
+  background-image: url(${backgroundImage});
+  background-size: cover;
+  background-position: center;
 `;
 
 export const HeaderContainer = styled.div`
