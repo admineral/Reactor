@@ -1,7 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
+import WebFont from "webfontloader";
 import App from './App';
+
+
+if (typeof window != 'undefined') {
+
+	WebFont.load({
+    google: {
+      families: ["Poppins", "Inter:400"],
+    },
+  });
+}
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

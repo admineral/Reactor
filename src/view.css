@@ -1,0 +1,92 @@
+.viewContainerRoot {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 110px 15px 35px;
+    box-sizing: border-box;
+    background-color: #121214;
+  }
+  .headerContainer {
+    width: 39.26%;
+    position: relative;
+    gap: 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-self: flex-start;
+    align-items: flex-start;
+    margin: 0px 0px 101px 0px;
+    box-sizing: border-box;
+  }
+  .logoContainer {
+    width: 276px;
+    position: relative;
+    gap: 9px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    box-sizing: border-box;
+  }
+  .logoText {
+    position: relative;
+    color: #ffffff;
+    font-size: 36px;
+    font-family: Inter;
+    box-sizing: border-box;
+  }
+  .logoImage {
+    width: 54px;
+    min-width: 0px;
+    min-height: 0px;
+    position: relative;
+    flex-shrink: 0;
+    box-sizing: border-box;
+  }
+  .iconsContainer {
+    width: 89.66%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-self: flex-end;
+    align-items: flex-start;
+    padding: 11px 21.2px 657px 21.2px;
+    box-sizing: border-box;
+  }
+  .firstRectangle {
+    width: 99.84%;
+    height: 692px;
+    left: 1px;
+    top: 0px;
+    position: absolute;
+    border-radius: 12px;
+    box-sizing: border-box;
+    background-color: #202123;
+  }
+  .previewSectionContainer {
+    width: 54.77%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 11px 124px 657px 124px;
+    border-radius: 12px;
+    box-sizing: border-box;
+    background-color: #202123;
+  }
+  .previewTitle {
+    width: 75px;
+    height: 24px;
+    left: 18.320770263671875px;
+    top: 11px;
+    position: absolute;
+    color: #ffffff;
+    font-size: 20px;
+    font-family: Inter;
+    box-sizing: border-box;
+  }
+  
