@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Box, TextField, Button } from "@mui/material";
-import { SandpackProvider, SandpackLayout, SandpackCodeEditor, SandpackPreview , useSandpack, useSandpackNavigation, useActiveCode } from "@codesandbox/sandpack-react";
+import { SandpackProvider, SandpackLayout, SandpackCodeEditor, SandpackPreview } from "@codesandbox/sandpack-react";
 import { monokaiPro } from "@codesandbox/sandpack-themes";
 import { autocompletion, completionKeymap } from "@codemirror/autocomplete";
 
@@ -87,10 +87,6 @@ function App() {
   const windowHeight = window.innerHeight;
   const chatboxHeight = 200;
 
-
-
-  
-  
 
   const applyCode = (newCode) => {
   setPreviousCode(code);
@@ -182,10 +178,9 @@ ChatGPT, could you provide me with the updated code that incorporates these chan
 
   return (
 
-
     <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
 
-      <SandpackProvider 
+       <SandpackProvider 
       template="react" 
       theme={monokaiPro} 
       files={{
@@ -193,7 +188,6 @@ ChatGPT, could you provide me with the updated code that incorporates these chan
             }} 
             customSetup={{ 
               dependencies: { 
-                
                "@mui/material": "latest",
                "@material-ui/core": "latest",
                "@mui/icons-material": "latest",
@@ -202,21 +196,16 @@ ChatGPT, could you provide me with the updated code that incorporates these chan
                "react-router-dom": "latest",
                "@emotion/react": "latest",
                "@mui/styles": "latest",
-                
               }
             }}
             code={code}
             updateCode={newCode => setCode(newCode)}
-      >
+            >
 
-      
-
-            <SandpackLayout>
-
-                
+            <SandpackLayout>   
             <SandpackCodeEditor 
         
-              style={{ flex: 1 , height: "500px"}} 
+              style={{ flex: 1 , height: windowHeight - chatboxHeight}} 
               showLineNumbers={true}
               showTabs={true}
               showInlineErrors={true}
@@ -228,7 +217,7 @@ ChatGPT, could you provide me with the updated code that incorporates these chan
 
                 
                 <SandpackPreview 
-                style={{ flex: 1,  height: "500px" }} 
+                style={{ flex: 1,  height: windowHeight - chatboxHeight}} 
           
 
                 showRefreshButton={true}
@@ -239,19 +228,10 @@ ChatGPT, could you provide me with the updated code that incorporates these chan
                     Revert Code
                   </button>
                 }
-                
-                
-                
-
-
+                                            
                 />
-             
-              
+                   
             </SandpackLayout>
-
-          
-  
-
       </SandpackProvider>
 
 
@@ -259,7 +239,13 @@ ChatGPT, could you provide me with the updated code that incorporates these chan
 
 
 
-      <Box display="flex" flexDirection="column" height={chatboxHeight} border={1} borderColor="grey.300">
+      <Box 
+        display="flex" 
+        flexDirection="column" 
+        height={chatboxHeight} 
+        border={1} 
+        borderColor="grey.300"
+      >
         <Box flexGrow={1} p={1} overflow="auto" style={{ maxHeight: "calc(100% - 56px)" }} ref={chatHistoryRef}>
           {messages.map((message, index) => (
             <div key={index} style={{ marginBottom: "0.5rem" }}>
