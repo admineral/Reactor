@@ -116,18 +116,20 @@ function App() {
   const callChatGptApi = async (prompt) => {
     try {
       const formattedPrompt = `
-I am working on a web application using React. My current code snippet is:
+                I am working on a web application using React. My current code snippet is:
 
-${code}
+                ${code}
 
-I need to make the following changes or additions to my code:
+                I need to make the following changes or additions to my code:
 
-User: ${prompt} .
+                User: ${prompt} .
 
-For this, I have the following dependencies installed: "@mui/material, @material-ui/core, @mui/icons-material, @emotion/styled, @material-ui/icons, @emotion/react, react-router-dom" .
-
-ChatGPT, could you provide me with the updated code that incorporates these changes or additions?
-`;
+                For this, I have the following dependencies installed: 
+                "@mui/material, @material-ui/core, @mui/icons-material, @emotion/styled, @material-ui/icons, @emotion/react " .
+                I would like to use these dependencies to create a modern and visually appealing appearance for my application. 
+                For routing, I prefer to use HashRouter from 'react-router-dom'.
+                ChatGPT, could you provide me with the updated code that incorporates these changes or additions? 
+                `;
       const response = await fetch('https://api.openai.com/v1/engines/text-davinci-003/completions', {
         method: 'POST',
         headers: {
