@@ -62,7 +62,10 @@ cd Reactor
 ```
 npm install
 ```
-
+or 
+```
+npm install --legacy-peer-deps
+```
 4. Create a `.env` file in the root of the project directory and add your OpenAI API key:
 
 ```
