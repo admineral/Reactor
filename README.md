@@ -34,6 +34,9 @@ https://github.com/admineral/Reactor-ChatGPT-Plugin
 [Reactor_old_v3](https://github.com/admineral/Reactor/tree/main/Reactor_old/Reactor_old_v3)
 
 
+# Contributing
+
+Contributions are always welcome! Feel free to submit a pull request, create an issue, or suggest new features.
 
 # Contributors
 
@@ -145,11 +148,7 @@ or:
 
 
 
-# Contributing
 
-
-
-Contributions are always welcome! Feel free to submit a pull request, create an issue, or suggest new features.
 
 
 
