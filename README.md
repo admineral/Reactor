@@ -116,6 +116,7 @@ or:
 ## Contributing
 
 
-Thanks to [asj9469](https://github.com/MrGrif0n) for the new UI
+# Thanks to [asj9469](https://github.com/MrGrif0n) for the new UI !!!!
+
 Contributions are always welcome! Feel free to submit a pull request, create an issue, or suggest new features.
 
