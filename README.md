@@ -20,8 +20,9 @@ This project is a React-based live code editor integrated with OpenAI's ChatGPT 
 
 
 ## 🚀 Reactor Plugin for ChatGPT 🚀
-<img src="images/ChatGPT-Plugin.gif" alt="Plugin" width="800px">
 https://github.com/admineral/Reactor-ChatGPT-Plugin
+<img src="images/ChatGPT-Plugin.gif" alt="Plugin" width="800px">
+
 
 
 
