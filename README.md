@@ -29,10 +29,10 @@ https://github.com/admineral/Reactor-ChatGPT-Plugin
 
 
 
-# Developer version with new Backend
 
 
-[For Developer](https://reactor-devs.vercel.app)
+
+
 
 # Deploying on Vercel
 
@@ -136,8 +136,9 @@ Contributions are always welcome! Feel free to submit a pull request, create an 
 
 # Code Explanation
 
+-new Backend but old UI
 
-Developer Version: 
+[For Developers](https://reactor-devs.vercel.app)
 
 <img src="images/Reactor_old.gif" alt="Reactor" width="800px">
 [Reactor_old_v3](https://github.com/admineral/Reactor/tree/main/Reactor_old/Reactor_old_v3)
