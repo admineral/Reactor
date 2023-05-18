@@ -27,6 +27,13 @@ https://github.com/admineral/Reactor-ChatGPT-Plugin
 
 ## Thanks to [asj9469](https://github.com/MrGrif0n) for the new UI !!!!
 
+
+
+# Developer version with new Backend
+
+
+[For Developer](https://reactor-devs.vercel.app)
+
 # Deploying on Vercel
 
 To deploy this app on Vercel, follow these steps:
