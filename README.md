@@ -36,9 +36,17 @@ https://github.com/admineral/Reactor-ChatGPT-Plugin
 
 # Contributors
 
-## Thanks to [asj9469](https://github.com/MrGrif0n) for the new UI !!!!
+### Thanks to [asj9469](https://github.com/MrGrif0n) for the new UI !!!!
 
+# Planned Features for the Future:
 
+- Multi-language Support
+
+- Perfect Prompt Generation
+
+- ChatGPT Plugin Release
+
+- Integration of New Backend into the New UI
 
 
 
