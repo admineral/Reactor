@@ -23,6 +23,17 @@ This project is a React-based live code editor integrated with OpenAI's ChatGPT 
 <img src="images/ChatGPT-Plugin.gif" alt="Plugin" width="800px">
 https://github.com/admineral/Reactor-ChatGPT-Plugin
 
+
+
+-New Backend but old UI
+
+[For Developers - https://reactor-devs.vercel.app](https://reactor-devs.vercel.app)
+
+<img src="images/Reactor_old.gif" alt="Reactor" width="800px">
+[Reactor_old_v3](https://github.com/admineral/Reactor/tree/main/Reactor_old/Reactor_old_v3)
+
+
+
 # Contributors
 
 ## Thanks to [asj9469](https://github.com/MrGrif0n) for the new UI !!!!
@@ -136,13 +147,7 @@ Contributions are always welcome! Feel free to submit a pull request, create an 
 
 # Code Explanation
 
--new Backend but old UI
-
-[For Developers](https://reactor-devs.vercel.app)
-
-<img src="images/Reactor_old.gif" alt="Reactor" width="800px">
 [Reactor_old_v3](https://github.com/admineral/Reactor/tree/main/Reactor_old/Reactor_old_v3)
-
 
 ### Dependencies
 
