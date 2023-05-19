@@ -61,6 +61,7 @@ export const ViewContainerRoot = styled.div`
   background-image: url(${backgroundImage});
   background-size: cover;
   background-position: center;
+  height: 100vh;
 `;
 
 export const HeaderContainer = styled.div`
@@ -70,7 +71,7 @@ export const HeaderContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  align-self: flex-start;
+  align-self: center;
   align-items: flex-start;
   margin: 0px 0px 101px 0px;
   box-sizing: border-box;
@@ -113,6 +114,7 @@ export const CodeEditorRectangle = styled.div`
   padding: 11px 21.2px 657px 21.2px;
   box-sizing: border-box;
 `;
+
 export const LiveCodeContainer = styled.div`
 width: 100%;
 position: relative;
