@@ -35,6 +35,10 @@ const StyledContainer = styled(Container)({
 
 const StyledButton = styled(Button)({
   marginTop: '16px',
+  fontSize: '15px',
+  padding: '10px',
+  borderRadius: '50px',
+  boxShadow: '0px 5px 10px #888888',
 });
 
 function App() {
