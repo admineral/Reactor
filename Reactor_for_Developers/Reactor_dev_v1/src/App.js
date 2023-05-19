@@ -59,7 +59,7 @@ function App() {
                   For this, I have the following dependencies installed: 
                   "@mui/material, @material-ui/core, @mui/icons-material, @emotion/styled, @material-ui/icons, @emotion/react and "react-router-dom": "^6.11.2"" .
                   I would like to use these dependencies to create a modern and visually appealing appearance for my application. 
-                  ChatGPT, could you provide me with the updated code that incorporates these changes or additions? 
+                  ChatGPT, could you provide me with the updated code that incorporates these changes or additions? Respond with full code:
                   `;
           const response = await fetch('https://api.openai.com/v1/engines/text-davinci-003/completions', {
               method: 'POST',
