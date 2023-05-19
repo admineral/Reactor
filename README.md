@@ -26,7 +26,7 @@ https://github.com/admineral/Reactor-ChatGPT-Plugin
 
 
 
-## Here's a developer version with a simple UI but a new backend.
+## Here's a developer version with a simple UI and a new backend.(Sandpack)
 
 [For Developers - https://reactor-devs.vercel.app](https://reactor-devs.vercel.app)
 
