@@ -30,7 +30,7 @@ https://github.com/admineral/Reactor-ChatGPT-Plugin
 
 [For Developers - https://reactor-devs.vercel.app](https://reactor-devs.vercel.app)
 
-<img src="images/Reactor_old.gif" alt="Reactor" width="800px">
+<img src="images/Reactor_dev.gif" alt="Reactor" width="800px">
 [Reactor_for_Developers_v1](https://github.com/admineral/Reactor/tree/main/Reactor_for_Developers/Reactor_dev_v1)
 
 
