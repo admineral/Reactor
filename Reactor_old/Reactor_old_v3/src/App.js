@@ -12,6 +12,7 @@ import { Button, Typography, Container, Box, Fade, Tooltip } from '@mui/material
 import styled from '@emotion/styled';
 import InfoIcon from '@mui/icons-material/Info';
 import { keyframes } from '@emotion/react';
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 
 const fadeIn = keyframes\`
   from {
@@ -39,11 +40,13 @@ const StyledButton = styled(Button)({
   marginTop: '16px',
 });
 
-export default function App() {
+function App() {
+  const navigate = useNavigate();
   const [buttonClicked, setButtonClicked] = useState(false);
 
   const handleButtonClick = () => {
     setButtonClicked(true);
+    navigate('/about');
   };
 
   return (
@@ -73,6 +76,32 @@ export default function App() {
     </StyledContainer>
   );
 }
+
+function About() {
+  return (
+    <StyledContainer>
+      <Typography variant="h4" component="h1">
+        About Us
+      </Typography>
+      <Typography variant="h6">
+        This is the About page. Here you can learn more about us!
+      </Typography>
+    </StyledContainer>
+  );
+}
+
+function Main() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<App />} />
+        <Route path="/about" element={<About />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default Main;
 `;
 
 
@@ -125,9 +154,8 @@ function App() {
                 User: ${prompt} .
 
                 For this, I have the following dependencies installed: 
-                "@mui/material, @material-ui/core, @mui/icons-material, @emotion/styled, @material-ui/icons, @emotion/react " .
+                "@mui/material, @material-ui/core, @mui/icons-material, @emotion/styled, @material-ui/icons, @emotion/react and "react-router-dom": "^6.11.2"" .
                 I would like to use these dependencies to create a modern and visually appealing appearance for my application. 
-                For routing, I prefer to use HashRouter from 'react-router-dom'.
                 ChatGPT, could you provide me with the updated code that incorporates these changes or additions? 
                 `;
       const response = await fetch('https://api.openai.com/v1/engines/text-davinci-003/completions', {
@@ -187,6 +215,8 @@ function App() {
       theme={monokaiPro} 
       files={{
                 '/App.js': {code},
+               
+
             }} 
             customSetup={{ 
               dependencies: { 
