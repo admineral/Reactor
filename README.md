@@ -26,7 +26,7 @@ https://github.com/admineral/Reactor-ChatGPT-Plugin
 
 
 
-## Here's a developer version with a simple UI and a new backend.(Sandpack)
+## Here's a developer version with a simple UI with new backend.(Sandpack)
 
 [For Developers - https://reactor-devs.vercel.app](https://reactor-devs.vercel.app)
 
@@ -188,11 +188,6 @@ cd Reactor
 ```
 
 3. Install the dependencies:
-
-```
-npm install
-```
-or 
 ```
 npm install --legacy-peer-deps
 ```
