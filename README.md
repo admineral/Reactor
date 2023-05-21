@@ -40,7 +40,7 @@ Contributions are always welcome! Feel free to submit a pull request, create an 
 
 # Contributors
 
-### Thanks to [asj9469](https://github.com/MrGrif0n) for the new UI !!!!
+### Thanks to [asj9469](https://github.com/asj9469) for the new UI !!!!
 
 # Planned Features for the Future:
 
