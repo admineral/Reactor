@@ -34,23 +34,13 @@ function App() {
       alert("No previous code to revert to.");
     }
   };
-  const toggleFullResponse = (index) => {
-    setMessages((messages) =>
-      messages.map((message, i) => {
-        if (i === index) {
-          return { ...message, showFullResponse: !message.showFullResponse };
-        } else {
-          return message;
-        }
-      })
-    );
-  };
+
 
 
 
   const handleChatSubmit = async (e) => {
       e.preventDefault();
-      setMessages([...messages, { sender: "user", text: chatInput, showFullResponse: false }]);
+      setMessages([...messages, { sender: "user", text: chatInput }]);
       setChatInput("");
       setIsWaitingForResponse(true);
 
@@ -97,7 +87,6 @@ function App() {
                     {
                       sender: "ChatGPT",
                       text: buffer,
-                      showFullResponse: false,
                       isResponseReady: stopStreaming,
                     },
                   ];
@@ -124,6 +113,9 @@ function App() {
               return updatedMessages;
             }
           });
+
+        // after fetchChatGptResponseTurbo has completed
+        setIsWaitingForResponse(false);
       } catch (error) {
         setIsWaitingForResponse(false);
         setMessages((prevMessages) => [
@@ -132,7 +124,7 @@ function App() {
             sender: "ChatGPT",
             text: `An error occurred: ${error.message}`,
             isError: true,
-            showFullResponse: false,
+            
           },
         ]);
       }
@@ -177,6 +169,7 @@ function App() {
                   {!message.isError && message.isResponseReady && (
                     <>
                       <Button
+
                         variant="outlined"
                         color="primary"
                         size="small"
@@ -185,37 +178,8 @@ function App() {
                         disabled={!message.extractedCode} 
                       >
                         Apply Code
+
                       </Button>
-                      <Button
-                        variant="outlined"
-                        color="primary"
-                        size="small"
-                        onClick={() => toggleFullResponse(index)}
-                        style={{ marginLeft: "0.5rem" }}
-                        disabled={!message.isResponseReady}
-                      >
-                        {message.showFullResponse ? "Hide Full Response" : "Show Full Response"}
-                      </Button>
-                      {message.showFullResponse && (
-                        <>
-                        
-                          {message.extractedCode && (
-                            <pre style={{ whiteSpace: "pre-wrap", marginTop: "0.5rem" }}>
-                                {message.extractedCode}
-                             </pre>
-                           )}
-                          {message.apiResponse && (
-                            <pre style={{ whiteSpace: "pre-wrap", marginTop: "0.5rem" }}>
-                              {JSON.stringify(message.apiResponse, null, 2)}
-                            </pre>
-                          )}
-                        </>
-                      )}
-                      {!message.showFullResponse && message.isExtractedAnswer && (
-                        <pre style={{ whiteSpace: "pre-wrap", marginTop: "0.5rem" }}>
-                          {message.text}
-                        </pre>
-                      )}
                     </>
                   )}
                   {message.isError && (
@@ -235,7 +199,7 @@ function App() {
           ))}
 
 
-          {isWaitingForResponse && (!messages[messages.length - 1]?.isResponseReady || messages[messages.length - 1]?.sender !== 'ChatGPT')&& (
+          {isWaitingForResponse && (!messages[messages.length - 1]?.extractedCode || messages[messages.length - 1]?.sender !== 'ChatGPT')&& (
             <div>
               <strong>ChatGPT:</strong> thinking...
             </div>
