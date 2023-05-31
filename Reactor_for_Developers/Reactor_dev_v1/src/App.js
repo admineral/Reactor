@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { Box, TextField, Button, Select, MenuItem } from "@mui/material";
+import { Box, TextField, Button } from "@mui/material";
 
 // other imports...
 import { initialCode } from "./utils/InitialCode";
 import { fetchChatGptResponseTurbo } from './utils/callChatGptApi_turbo';
-import { fetchChatGptResponse } from './utils/callChatGptApi';
 import SandpackComponent from "./utils/SandpackComponent";
 
+
+
+
 function App() {
+
   const [code, setCode] = useState(initialCode);
   const [chatInput, setChatInput] = useState("");
   const [messages, setMessages] = useState([]);
   const [isWaitingForResponse, setIsWaitingForResponse] = useState(false);
   const [previousCode, setPreviousCode] = useState("");
-  const [selectedModel, setSelectedModel] = useState("gpt3.5-turbo");
   const chatHistoryRef = React.useRef(null);
   const windowHeight = window.innerHeight;
   const chatboxHeight = 200;
@@ -24,7 +26,6 @@ function App() {
       setCode(newCode);
     }
   };
-
   const revertCode = () => {
     if (previousCode) {
       setCode(previousCode);
@@ -33,7 +34,6 @@ function App() {
       alert("No previous code to revert to.");
     }
   };
-
   const toggleFullResponse = (index) => {
     setMessages((messages) =>
       messages.map((message, i) => {
@@ -46,63 +46,100 @@ function App() {
     );
   };
 
+
+
   const handleChatSubmit = async (e) => {
-    e.preventDefault();
-    setMessages([...messages, { sender: "user", text: chatInput, showFullResponse: false }]);
-    setChatInput("");
-    setIsWaitingForResponse(true);
-    try {
-      let chatGptResponse;
-      let apiResponse;
-      let extractedCode = null;
-      let extractedAnswer = null;
-      if (selectedModel === "gpt3.5-turbo") {
-        const response = await fetchChatGptResponseTurbo(code, chatInput);
-        chatGptResponse = response.answer;
-        apiResponse = response.apiResponse;
-        extractedCode = response.code;
-        extractedAnswer = response.extractedAnswer;
-      } else {
-        chatGptResponse = await fetchChatGptResponse(code, chatInput);
-      }
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          sender: "ChatGPT",
-          text: chatGptResponse,
-          showFullResponse: false,
-          extractedCode,
-          apiResponse,
-          extractedAnswer,
-        },
-      ]);
-      setIsWaitingForResponse(false);
-      if (extractedAnswer) {
+      e.preventDefault();
+      setMessages([...messages, { sender: "user", text: chatInput, showFullResponse: false }]);
+      setChatInput("");
+      setIsWaitingForResponse(true);
+
+      try {
+        let buffer = "";
+        let stopStreaming = false;
+        let previousBuffer = "";
+
+        const updateUI = (content) => {
+            if (stopStreaming) {
+              return;
+            }
+
+            buffer += content;
+
+            // Look for "{__CodeStart__}" 
+            const answerEndCodeStartIndex = buffer.indexOf('{__CodeStart__}');
+
+            // If '{__CodeStart__} is in buffer, trim the buffer and set stopStreaming to true
+            if (answerEndCodeStartIndex !== -1) {
+              buffer = buffer.substring(0, answerEndCodeStartIndex);
+              stopStreaming = true;
+            }
+
+            // Only update the UI if the buffer has changed
+            if (buffer !== previousBuffer) {
+              previousBuffer = buffer;
+
+              setMessages((prevMessages) => {
+                const lastMessageIndex = prevMessages.length - 1;
+                const lastMessage = prevMessages[lastMessageIndex];
+
+                if (lastMessage?.sender === "ChatGPT") {
+                  const updatedMessages = [...prevMessages];
+                  updatedMessages[lastMessageIndex] = {
+                    ...lastMessage,
+                    text: buffer,
+                    isResponseReady: stopStreaming,
+                  };
+                  return updatedMessages;
+                } else {
+                  return [
+                    ...prevMessages,
+                    {
+                      sender: "ChatGPT",
+                      text: buffer,
+                      showFullResponse: false,
+                      isResponseReady: stopStreaming,
+                    },
+                  ];
+                }
+              });
+            }
+          };
+
+        const response = await fetchChatGptResponseTurbo(code, chatInput, updateUI);
+        const extractedCode = response.code;
+
+        // At this point, check the last message in the UI and append the extractedCode
+        setMessages((prevMessages) => {
+            const lastMessageIndex = prevMessages.length - 1;
+            const lastMessage = prevMessages[lastMessageIndex];
+
+            if (lastMessage?.sender === "ChatGPT") {
+              const updatedMessages = [...prevMessages];
+              updatedMessages[lastMessageIndex] = {
+                ...lastMessage,
+                extractedCode,
+                isResponseReady: true,
+              };
+              return updatedMessages;
+            }
+          });
+      } catch (error) {
+        setIsWaitingForResponse(false);
         setMessages((prevMessages) => [
           ...prevMessages,
           {
             sender: "ChatGPT",
-            text: extractedAnswer,
+            text: `An error occurred: ${error.message}`,
+            isError: true,
             showFullResponse: false,
-            extractedCode: null,
-            apiResponse: null,
-            isExtractedAnswer: true,
           },
         ]);
       }
-    } catch (error) {
-      setIsWaitingForResponse(false);
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          sender: "ChatGPT",
-          text: `An error occurred: ${error.message}`,
-          isError: true,
-          showFullResponse: false,
-        },
-      ]);
-    }
-  };
+    };
+
+
+
 
 
   useEffect(() => {
@@ -112,9 +149,6 @@ function App() {
     }
   }, [messages]);
 
-  const handleModelChange = (event) => {
-    setSelectedModel(event.target.value);
-  };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
@@ -140,7 +174,7 @@ function App() {
                 <>
                   <strong>ChatGPT: </strong>
                   {message.text}
-                  {!message.isError && (
+                  {!message.isError && message.isResponseReady && (
                     <>
                       <Button
                         variant="outlined"
@@ -148,6 +182,7 @@ function App() {
                         size="small"
                         onClick={() => applyCode(message.extractedCode)}
                         style={{ marginLeft: "1rem" }}
+                        disabled={!message.extractedCode} 
                       >
                         Apply Code
                       </Button>
@@ -157,14 +192,18 @@ function App() {
                         size="small"
                         onClick={() => toggleFullResponse(index)}
                         style={{ marginLeft: "0.5rem" }}
+                        disabled={!message.isResponseReady}
                       >
                         {message.showFullResponse ? "Hide Full Response" : "Show Full Response"}
                       </Button>
                       {message.showFullResponse && (
                         <>
-                          <pre style={{ whiteSpace: "pre-wrap", marginTop: "0.5rem" }}>
-                            {message.text}
-                          </pre>
+                        
+                          {message.extractedCode && (
+                            <pre style={{ whiteSpace: "pre-wrap", marginTop: "0.5rem" }}>
+                                {message.extractedCode}
+                             </pre>
+                           )}
                           {message.apiResponse && (
                             <pre style={{ whiteSpace: "pre-wrap", marginTop: "0.5rem" }}>
                               {JSON.stringify(message.apiResponse, null, 2)}
@@ -196,7 +235,7 @@ function App() {
           ))}
 
 
-          {isWaitingForResponse && (
+          {isWaitingForResponse && (!messages[messages.length - 1]?.isResponseReady || messages[messages.length - 1]?.sender !== 'ChatGPT')&& (
             <div>
               <strong>ChatGPT:</strong> thinking...
             </div>
@@ -204,10 +243,7 @@ function App() {
         </Box>
         <form onSubmit={handleChatSubmit}>
           <Box display="flex" p={1} alignItems="center">
-            <Select value={selectedModel} onChange={handleModelChange} style={{ marginRight: "8px" }}>
-              <MenuItem value="gpt3.5-turbo">GPT-3.5 Turbo</MenuItem>
-              <MenuItem value="text-davinci-003">Text Davinci</MenuItem>
-            </Select>
+            
             <TextField
               fullWidth
               value={chatInput}
@@ -216,7 +252,7 @@ function App() {
               size="small"
               label="Type your message"
             />
-            <Button type="submit" variant="contained" color="primary" style={{ marginLeft: "1rem" }}>
+             <Button type="submit" variant="contained" color="primary" style={{ marginLeft: "1rem" }} disabled={isWaitingForResponse}>
               Send
             </Button>
           </Box>

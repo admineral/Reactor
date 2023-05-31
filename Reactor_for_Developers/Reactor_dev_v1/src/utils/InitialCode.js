@@ -1,8 +1,5 @@
 // InitialCode.js
 
-
-
-
 export const initialCode =`import React, { useState } from 'react';
 import { Button, Typography, Container, Box, Fade, Tooltip } from '@mui/material';
 import styled from '@emotion/styled';
