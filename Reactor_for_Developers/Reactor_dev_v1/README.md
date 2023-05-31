@@ -6,7 +6,7 @@ This application is a code assistant that interacts with the OpenAI GPT-3.5 Turb
 
 To install dependencies, run:
 ```bash
-npm install
+npm install --legacy-peer-deps
 ```
 
 Then, to start the application, run:
