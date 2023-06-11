@@ -1,9 +1,15 @@
-import React from "react";
-import { SandpackProvider, SandpackLayout, SandpackCodeEditor, SandpackPreview } from "@codesandbox/sandpack-react";
+import React, { useState } from "react";
+import { SandpackProvider, SandpackLayout, SandpackCodeEditor, SandpackPreview, SandpackFileExplorer } from "@codesandbox/sandpack-react";
 import { monokaiPro } from "@codesandbox/sandpack-themes";
 import { autocompletion, completionKeymap } from "@codemirror/autocomplete";
 
-const SandpackComponent = ({ code, updateCode, revertCode, windowHeight, chatboxHeight }) => {
+const SandpackComponent = ({ code, updateCode, windowHeight, chatboxHeight, dependencies }) => {
+  const [showFileExplorer, setShowFileExplorer] = useState(false);
+
+  const toggleFileExplorer = () => {
+    setShowFileExplorer(prev => !prev);
+  }
+
   return (
     <SandpackProvider
       template="react"
@@ -21,12 +27,14 @@ const SandpackComponent = ({ code, updateCode, revertCode, windowHeight, chatbox
           "react-router-dom": "latest",
           "@emotion/react": "latest",
           "@mui/styles": "latest",
+          ...dependencies,
         },
       }}
       code={code}
       updateCode={newCode => updateCode(newCode)}
     >
       <SandpackLayout>
+        {showFileExplorer && <SandpackFileExplorer />}
         <SandpackCodeEditor
           style={{ flex: 1, height: windowHeight - chatboxHeight }}
           showLineNumbers={true}
@@ -41,8 +49,8 @@ const SandpackComponent = ({ code, updateCode, revertCode, windowHeight, chatbox
           showRefreshButton={true}
           showOpenInCodeSandbox={false}
           actionsChildren={
-            <button onClick={revertCode}>
-              Revert Code
+            <button onClick={toggleFileExplorer}>
+              {showFileExplorer ? 'Hide Files' : 'Show Files'}
             </button>
           }
         />

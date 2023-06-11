@@ -16,11 +16,28 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
     };
     const userCodeMessage = {
       role: "user",
-      content: `Here is my current React code snippet: \n\n${code}\n\nI have the following dependencies installed: "@mui/material, @material-ui/core, @mui/icons-material, @emotion/styled, @material-ui/icons, @emotion/react, and "react-router-dom": "^6.11.2"". I would like to use these dependencies to create a modern and visually appealing appearance for my application.`
+      content: `Here is my current React code snippet: \n\n${code}\n\n`
     };
     const userChangeRequestMessage = {
       role: "user",
-      content: `I need to make the following changes or additions to my code: ${chatInput}. Could you provide a detailed explanation understandable to a five-year-old, and then the COMPLETE UPDATED CODE that incorporates these changes or additions? Please format your response as follows: [Your explanation here].\n\n{__CodeStart__}\n\n\n[Your entire React code here]\n\n{__CodeEnd__}`
+      content: `I need to make the following changes or additions to my code: ${chatInput}. \n\n
+      Could you provide a detailed explanation understandable to a five-year-old but no code, and then the COMPLETE UPDATED CODE that incorporates these changes or additions? Also,if there are any new or updated dependencies needed, please list them out, each on a new line. If there are no new or updated dependencies, please DO NOT write anything in the dependencies section, leave it COMPLETELY EMPTY.
+
+      Note: Please NEVER show code in the explanation, and ensure to format your response as follows: explanation, then code, then dependencies. Please answer in this format: 
+        \n\n
+      [Your short explanation without code here].
+
+      {__CodeStart__}
+
+      [Your entire React code here]
+
+      {__CodeEnd__}
+
+      {__DependenciesStart__}
+
+      [If there are any new or updated dependencies, list them here. If there are none, write __none__ ]
+
+      {__DependenciesEnd__}`
     };
 
     const messages = [systemMessage, userCodeMessage, userChangeRequestMessage];
@@ -36,7 +53,7 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
         model: 'gpt-3.5-turbo',
         messages,
         max_tokens: 2000,
-        temperature: 0.2,
+        temperature: 0.1,
         top_p: 1,
         frequency_penalty: 0,
         presence_penalty: 0,
@@ -54,8 +71,9 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
     let partialLine = '';
     let buffer = '';
     let extractedCode = null;
+    let extractedDependencies = null;
     let extractedAnswer = null;
-    let CodeStartIndex = -1;
+    let codeStartIndex = -1;
 
     while (true) {
         console.log('Buffer loading...');
@@ -91,22 +109,31 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
         }
     }
 
-    // After the stream has ended
+     // After the stream has ended
     const answerEndCodeStartIndex = buffer.indexOf('{__CodeStart__}');
+    let dependenciesStartIndex = buffer.indexOf('{__DependenciesStart__}');  // <-- Declare once here
     if (answerEndCodeStartIndex !== -1) {
       extractedAnswer = buffer.substring(0, answerEndCodeStartIndex).trim();
       const codeEndIndex = buffer.indexOf('{__CodeEnd__}', answerEndCodeStartIndex);
       if (codeEndIndex !== -1) {
-        CodeStartIndex = answerEndCodeStartIndex + '{__CodeStart__}'.length;
-        extractedCode = buffer.substring(CodeStartIndex, codeEndIndex).trim();
+        codeStartIndex = answerEndCodeStartIndex + '{__CodeStart__}'.length;
+        extractedCode = buffer.substring(codeStartIndex, codeEndIndex).trim();
+      }
+      if (dependenciesStartIndex !== -1) {
+        const dependenciesEndIndex = buffer.indexOf('{__DependenciesEnd__}', dependenciesStartIndex);
+        if (dependenciesEndIndex !== -1) {
+          dependenciesStartIndex = dependenciesStartIndex + '{__DependenciesStart__}'.length;  // <-- Update value here
+          extractedDependencies = buffer.substring(dependenciesStartIndex, dependenciesEndIndex).trim();
+        }
       }
     } else {
       extractedAnswer = buffer;
     }
 
     console.log('Stream ended...');
-    // return extractedAnswer and extractedCode
-    return { answer: extractedAnswer, code: extractedCode };
+    // return extractedAnswer, extractedCode, and extractedDependencies
+    return { answer: extractedAnswer, code: extractedCode, dependencies: extractedDependencies };
+
 
   } catch (error) {
     // Handle general errors
