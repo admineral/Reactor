@@ -43,7 +43,7 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
     const messages = [systemMessage, userCodeMessage, userChangeRequestMessage];
 
     console.log('Sending OpenAI request...');
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://api.openai.com/v1/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
