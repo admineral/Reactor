@@ -50,7 +50,7 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
         'Authorization': `Bearer ${process.env.REACT_APP_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-3.5-turbo-instruct',
         messages,
         max_tokens: 2000,
         temperature: 0.1,
