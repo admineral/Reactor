@@ -10,17 +10,10 @@ const isJSON = (str) => {
 
 export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
   try {
-    const systemMessage = {
-      role: "system",
-      content: "You're a helpful AI that provides code assistance and explanations in a manner understandable to a five-year-old."
-    };
-    const userCodeMessage = {
-      role: "user",
-      content: `Here is my current React code snippet: \n\n${code}\n\n`
-    };
+
     const userChangeRequestMessage = {
       role: "user",
-      content: `I need to make the following changes or additions to my code: ${chatInput}. \n\n
+      content: `Here is my current React code snippet: \n\n${code}\n\n . I need to make the following changes or additions to my code: ${chatInput}. \n\n
       Could you provide a detailed explanation understandable to a five-year-old but no code, and then the COMPLETE UPDATED CODE that incorporates these changes or additions? Also,if there are any new or updated dependencies needed, please list them out, each on a new line. If there are no new or updated dependencies, please DO NOT write anything in the dependencies section, leave it COMPLETELY EMPTY.
 
       Note: Please NEVER show code in the explanation, and ensure to format your response as follows: explanation, then code, then dependencies. Please answer in this format: 
@@ -40,7 +33,7 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
       {__DependenciesEnd__}`
     };
 
-    const messages = [systemMessage, userCodeMessage, userChangeRequestMessage];
+    const prompt = [userChangeRequestMessage];
 
     console.log('Sending OpenAI request...');
     const response = await fetch('https://api.openai.com/v1/completions', {
@@ -51,7 +44,7 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
       },
       body: JSON.stringify({
         model: 'gpt-3.5-turbo-instruct',
-        messages,
+        prompt,
         max_tokens: 2000,
         temperature: 0.1,
         top_p: 1,
