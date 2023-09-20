@@ -13,30 +13,15 @@ export const runtime = 'edge';
 // Main function to fetch response from OpenAI based on given code and chat input
 export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
   try {
+    console.log("[Start] Fetching Chat GPT response.");
+
     // Construct the prompt string
-    const prompt = `Here is my current React code snippet: \n\n${code}\n\n . I need to make the following changes or additions to my code: ${chatInput}. \n\n
-    Could you provide a detailed explanation understandable to a five-year-old but no code, and then the COMPLETE UPDATED CODE that incorporates these changes or additions? Also, if there are any new or updated dependencies needed, please list them out, each on a new line. If there are no new or updated dependencies, please DO NOT write anything in the dependencies section, leave it COMPLETELY EMPTY.
-
-    Note: Please NEVER show code in the explanation, and ensure to format your response as follows: explanation, then code, then dependencies. Please answer in this format: 
-      \n\n
-    [Your short explanation without code here].
-
-    {__CodeStart__}
-
-    [Your entire React code here]
-
-    {__CodeEnd__}
-
-    {__DependenciesStart__}
-
-    [If there are any new or updated dependencies, list them here. If there are none, write __none__ ]
-
-    {__DependenciesEnd__}`
-  ;
-
+    const prompt = `Here is my current React code snippet: \n\n${code}\n\n ... [Rest of your prompt]`;
+    
     // Log the constructed prompt for debugging
-    console.log("[Request] Preparing to send request to OpenAI with prompt:", prompt);
+    console.log("[Debug] Constructed prompt:", prompt);
 
+    console.log("[Request] Sending request to OpenAI.");
     // Make a request to OpenAI for completion
     const response = await openai.createCompletion({
       model: 'gpt-3.5-turbo-instruct',
@@ -49,40 +34,39 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
       stream: true
     });
 
+    console.log("[Response] Received response object from OpenAI:", response);
+
     // Error handling if the response isn't successful
     if (!response.ok) {
       console.error("[Error] Response from OpenAI not OK. Status:", response.status);
       throw new Error('Invalid response from OpenAI');
     }
 
-    // Log the received streaming response for debugging
-    console.log("[Stream] Response received from OpenAI:", response);
+    console.log("[Debug] Initializing OpenAI stream with callbacks.");
 
-    // Initialize the readable stream
+    // Initialize the readable stream with callback functions
     const openAIStream = OpenAIStream(response, {
       onStart: async () => {
         console.log('[Stream] Stream started');
       },
       onCompletion: async (completion) => {
-        console.log('[Stream] Completion:', completion);
-        // Process the completion as needed
+        console.log('[Stream] Received a completion:', completion);
       },
       onFinal: async (completion) => {
         console.log("[Stream] Stream completed with final completion:", completion);
-        // Process the final completion as needed
       },
       onToken: async (token) => {
-        console.log("[Stream] Token:", token);
+        console.log("[Stream] Received a token:", token);
         updateUI(token); // Call to update the UI with new token
       }
     });
 
-    // Now you can consume the openAIStream as needed
-    // ...
+    console.log("[Debug] OpenAI stream initialized.");
 
   } catch (error) {
-    console.error("Error while processing chat:", error);  // Log the exact error to the console
-    setSnackbarMessage('Something went wrong!');
-    setSnackbarOpen(true);
+    console.error(`[Error] Error occurred while fetching GPT-3 response:`, error);
+    throw error;
   }
 }
+
+console.log("[Debug] fetchChatGptResponseTurbo function defined.");
