@@ -8,13 +8,13 @@ const openai = new OpenAI({
 
 export async function POST(req, res) {
   try {
-    const { messages } = await req.json();
+    const { prompt } = await req.json();
     
-    // Create a chat completion using OpenAI
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4',
+    // Create a completion using OpenAI
+    const response = await openai.completions.create({
+      model: 'text-davinci-003', // or any other compatible model you wish to use
       stream: true,
-      messages,
+      prompt,
     });
     
     // Transform the response into a readable stream

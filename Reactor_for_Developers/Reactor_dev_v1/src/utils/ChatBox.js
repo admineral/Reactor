@@ -49,14 +49,14 @@ const ChatBox = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ message: chatInput })
+        body: JSON.stringify({ prompt: chatInput })
       });
 
       if (!response.ok) {
         throw new Error(`Server responded with ${response.status}`);
       }
 
-      const responseData = await response.json();
+      const responseData = await response.json(); // Handle streaming response if necessary
       setMessages([...messages, { sender: "user", text: chatInput }, { sender: "ai", text: responseData.message }]);
       console.log("AI response received:", responseData.message);
 
