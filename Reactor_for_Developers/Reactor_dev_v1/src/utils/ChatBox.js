@@ -1,87 +1,54 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { Box, TextField, IconButton, Snackbar } from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
 import Message from './Message';
-import UndoIcon from '@mui/icons-material/Undo';
 
-const ChatBox = ({ code, setCode, isSandpackLoading, addDependency, dependencies }) => {
+const ChatBox = () => {
   const [chatInput, setChatInput] = useState("");
   const [messages, setMessages] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const chatHistoryRef = useRef(null);
-  const [codeHistory, setCodeHistory] = useState([code]);
 
   const handleChatSubmit = async (e) => {
     e.preventDefault();
     setIsProcessing(true);
     setMessages([...messages, { sender: "user", text: chatInput }]);
-    setChatInput("");
-    console.log("Chat submitted to server");
+    console.log("Chat message sent:", chatInput);
 
     try {
-      const rawResponse = await fetch('/api/chatGpt', {
+      const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          code,
-          chatInput
-        })
+        body: JSON.stringify({ message: chatInput })
       });
 
-      if (!rawResponse.ok) {
-        throw new Error(`Server responded with ${rawResponse.status}`);
+      if (!response.ok) {
+        throw new Error(`Server responded with ${response.status}`);
       }
 
-      console.log("Received response from server");
-      const reader = rawResponse.body.getReader();
-      let textBuffer = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-
-        if (done) break;
-
-        const textChunk = new TextDecoder("utf-8").decode(value);
-        textBuffer += textChunk;
-        
-        console.log("Received chunk from server:", textChunk);
-      }
-
-      // Here, further process the final textBuffer, extract code, dependencies, etc.
-      console.log("Final textBuffer received:", textBuffer);
+      const responseData = await response.json();
+      setMessages([...messages, { sender: "user", text: chatInput }, { sender: "ai", text: responseData.message }]);
+      console.log("AI response received:", responseData.message);
 
     } catch (error) {
-      console.error("Error while processing chat:", error);
-      setSnackbarMessage('Something went wrong!');
+      console.error("Error during chat processing:", error);
+      setSnackbarMessage('Error processing chat. Please try again.');
       setSnackbarOpen(true);
     } finally {
       setIsProcessing(false);
+      setChatInput("");
     }
   };
-
-  const applyCode = (extractedCode) => {
-    if (extractedCode) {
-      setCodeHistory([...codeHistory, extractedCode]); // add new code to history
-      setCode(extractedCode);
-    }
-  };
-
-  useEffect(() => {
-    if (chatHistoryRef.current) {
-      const { scrollHeight } = chatHistoryRef.current;
-      chatHistoryRef.current.scrollTo(0, scrollHeight);
-    }
-  }, [messages]);
 
   return (
     <Box
       display="flex"
       flexDirection="column"
-      height={380}
+      height={400}
       bgcolor="#333333"
       boxShadow={2}
       borderRadius={2}
@@ -97,13 +64,13 @@ const ChatBox = ({ code, setCode, isSandpackLoading, addDependency, dependencies
         bgcolor="#2C2C2C"
         borderRadius={2}
       >
-        {messages.map((message, index) => <Message key={index} message={message} applyCode={applyCode} isSandpackLoading={isSandpackLoading} />)}
+        {messages.map((message, index) => (
+          <Message key={index} sender={message.sender} text={message.text} />
+        ))}
       </Box>
+
       <form onSubmit={handleChatSubmit}>
-        <Box display="flex" p={1} alignItems="center" mt={1}>
-                  <IconButton onClick={revertCode} style={{ color: "#007BFF", marginRight: "1rem" }} disabled={codeHistory.length <= 1}>
-            <UndoIcon />
-          </IconButton>
+        <Box display="flex" p={1} alignItems="center">
           <TextField
             fullWidth
             value={chatInput}
@@ -119,9 +86,9 @@ const ChatBox = ({ code, setCode, isSandpackLoading, addDependency, dependencies
           </IconButton>
         </Box>
       </form>
+
       <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={() => setSnackbarOpen(false)} message={snackbarMessage} />
     </Box>
-
   );
 }
 
