@@ -40,26 +40,28 @@ const ChatBox = () => {
   const handleChatSubmit = async (e) => {
     e.preventDefault();
     setIsProcessing(true);
-    setMessages([...messages, { sender: "user", text: chatInput }]);
+    const newMessage = { role: "user", content: chatInput };
+    const updatedMessages = [...messages, newMessage];
+    setMessages(updatedMessages);
     console.log("Chat message sent:", chatInput);
-
+  
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ prompt: chatInput })
+        body: JSON.stringify({ messages: updatedMessages })
       });
-
+  
       if (!response.ok) {
         throw new Error(`Server responded with ${response.status}`);
       }
-
-      const responseData = await response.json(); // Handle streaming response if necessary
-      setMessages([...messages, { sender: "user", text: chatInput }, { sender: "ai", text: responseData.message }]);
-      console.log("AI response received:", responseData.message);
-
+  
+      const responseData = await response.text(); // Handle the streaming response as text
+      setMessages([...updatedMessages, { role: "ChatGPT", content: responseData }]);
+      console.log("AI response received:", responseData);
+  
     } catch (error) {
       console.error("Error during chat processing:", error);
       setSnackbarMessage('Error processing chat. Please try again.');

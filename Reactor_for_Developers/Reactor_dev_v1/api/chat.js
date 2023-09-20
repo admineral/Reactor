@@ -1,42 +1,35 @@
-import OpenAI from 'openai';
+import { Configuration, OpenAIApi } from 'openai-edge';
 import { OpenAIStream, StreamingTextResponse } from 'ai';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+// Initialize the OpenAI API with the provided key
+const config = new Configuration({
+  apiKey: process.env.OPENAI_API_KEY
 });
+const openai = new OpenAIApi(config);
 
 export const runtime = 'edge';
 
 export async function POST(req, res) {
   try {
+    // Extract messages from the request body
     const { messages } = await req.json();
 
-    // Create a chat completion using OpenAI
-    const response = await openai.completions.create({
+    // Use the OpenAI API to generate a chat completion
+    const response = await openai.Completion.create({
       model: 'gpt-3.5-turbo-instruct',
       stream: true,
-      messages,
+      messages
     });
 
-    // Transform the response into a readable stream
+    // Transform the API response into a readable stream
     const stream = OpenAIStream(response);
 
-    // Return a StreamingTextResponse to the client
-    return res.status(200).send(new StreamingTextResponse(stream));
+    // Convert the stream into a text stream that can be sent as a response
+    return new StreamingTextResponse(stream);
 
   } catch (error) {
-    if (error.name === "APIError") {
-      console.error(`OpenAI API returned an API Error: ${error.message}`);
-      return res.status(500).send({ error: `API Error from OpenAI: ${error.message}` });
-    } else if (error.name === "APIConnectionError") {
-      console.error(`Failed to connect to OpenAI API: ${error.message}`);
-      return res.status(500).send({ error: `Connection error with OpenAI: ${error.message}` });
-    } else if (error.name === "RateLimitError") {
-      console.error(`OpenAI API request exceeded rate limit: ${error.message}`);
-      return res.status(429).send({ error: `Rate limit exceeded: ${error.message}` });
-    } else {
-      console.error(`Failed to get response from OpenAI: ${error.message}`);
-      return res.status(500).send({ error: `Unknown error: ${error.message}` });
-    }
+    // Generic error handling (consider adding specific error handling if needed)
+    console.error(`Failed to get response from OpenAI: ${error.message}`);
+    return res.status(500).send({ error: `Unknown error: ${error.message}` });
   }
 }
