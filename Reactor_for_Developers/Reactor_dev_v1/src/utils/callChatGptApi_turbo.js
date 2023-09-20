@@ -20,7 +20,7 @@ const isJSON = (str) => {
 
 function parseOpenAIStream(): AIStreamParser {
   return data => {
-    console.log("Received data chunk:", data);
+    //console.log("Received data chunk:", data);
     if (isJSON(data)) {
       const parsedData = JSON.parse(data);
       return parsedData.choices?.[0]?.delta?.content || "";
