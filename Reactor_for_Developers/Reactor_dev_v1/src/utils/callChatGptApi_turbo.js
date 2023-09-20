@@ -93,6 +93,9 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
         const parsedChunk = parseOpenAIStream()(chunk);
         buffer += parsedChunk;
         updateUI(parsedChunk); // Call to update the UI with new data
+        
+        // Hier geben Sie den aktuellen Inhalt des Buffers aus:
+        console.log("[Buffer] Current buffer:", buffer);
       },
       onCompletion: async () => {
         console.log("[Stream] Stream completed");
