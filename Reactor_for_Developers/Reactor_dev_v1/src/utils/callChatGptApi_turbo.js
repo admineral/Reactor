@@ -81,7 +81,8 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
     // ...
 
   } catch (error) {
-    console.error(`[Error] Error occurred while fetching GPT-3 response:`, error);
-    throw error;
+    console.error("Error while processing chat:", error);  // Log the exact error to the console
+    setSnackbarMessage('Something went wrong!');
+    setSnackbarOpen(true);
   }
 }
