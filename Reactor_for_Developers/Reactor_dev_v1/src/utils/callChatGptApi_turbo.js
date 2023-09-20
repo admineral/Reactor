@@ -13,18 +13,20 @@ const isJSON = (str) => {
         JSON.parse(str);
         return true;
     } catch (e) {
-        console.log("JSON Parsing failed:", e);
+        console.log("JSON Parsing failed for string:", str, "\nError:", e);
         return false;
     }
 };
 
 function parseOpenAIStream(): AIStreamParser {
   return data => {
-    //console.log("Received data chunk:", data);
+    console.log("[Parse Stream] Received data chunk:", data);
+
     if (isJSON(data)) {
       const parsedData = JSON.parse(data);
       return parsedData.choices?.[0]?.delta?.content || "";
     }
+    console.log("[Parse Stream] Data is not valid JSON. Returning empty.");
     return "";
   }
 }
@@ -49,9 +51,9 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
     [If there are any new or updated dependencies, list them here. If there are none, write __none__ ]
 
     {__DependenciesEnd__}`
-  ;
+  ; // For brevity, I kept this as-is
 
-    console.log("Preparing to send request to OpenAI with prompt:", prompt);
+    console.log("[Request] Preparing to send request to OpenAI with prompt:", prompt);
     const response = await openai.createCompletion({
       model: 'gpt-3.5-turbo-instruct',
       prompt,
@@ -64,32 +66,34 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
     });
 
     if (!response.ok) {
-      console.log("Response from OpenAI not OK. Status:", response.status);
+      console.error("[Error] Response from OpenAI not OK. Status:", response.status);
       throw new Error('Invalid response from OpenAI');
     }
 
-    console.log("Response received from OpenAI:", response);
+    console.log("[Stream] Response received from OpenAI:", response);
 
     let buffer = '';
 
     const openAIStream = AIStream(response, parseOpenAIStream(), {
       onStart: async () => {
-        console.log('Stream started');
+        console.log('[Stream] Stream started');
       },
       onCompletion: async (completion) => {
-        console.log("Received completion:", completion);
+        console.log("[Stream] Received completion:", completion);
         buffer += completion;
         updateUI(completion);
       },
       onFinal: async (completion) => {
-        console.log("Stream completed with final completion:", completion);
+        console.log("[Stream] Stream completed with final completion:", completion);
 
+        // Extract data from buffer
         let extractedCode, extractedDependencies, extractedAnswer;
         const answerEndCodeStartIndex = buffer.indexOf('{__CodeStart__}');
         let dependenciesStartIndex = buffer.indexOf('{__DependenciesStart__}');
         
-        console.log("Buffer after stream completion:", buffer);
+        console.log("[Buffer] Buffer after stream completion:", buffer);
         
+        // Extract answer, code, and dependencies
         if (answerEndCodeStartIndex !== -1) {
           extractedAnswer = buffer.substring(0, answerEndCodeStartIndex).trim();
           const codeEndIndex = buffer.indexOf('{__CodeEnd__}', answerEndCodeStartIndex);
@@ -108,7 +112,7 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
           extractedAnswer = buffer;
         }
 
-        console.log("Extracted data - Answer:", extractedAnswer, "Code:", extractedCode, "Dependencies:", extractedDependencies);
+        console.log("[Extracted Data] Answer:", extractedAnswer, "Code:", extractedCode, "Dependencies:", extractedDependencies);
         return { answer: extractedAnswer, code: extractedCode, dependencies: extractedDependencies };
       }
     });
@@ -116,7 +120,7 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
     // Now you can consume the openAIStream as needed
     // ... 
   } catch (error) {
-    console.log(`Error occurred while fetching GPT-3 response:`, error);
+    console.error(`[Error] Error occurred while fetching GPT-3 response:`, error);
     throw error;
   }
 }
