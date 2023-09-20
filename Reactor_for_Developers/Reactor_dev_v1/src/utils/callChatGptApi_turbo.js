@@ -21,12 +21,10 @@ const isJSON = (str) => {
 function parseOpenAIStream(): AIStreamParser {
   return data => {
     console.log("[Parse Stream] Received data chunk:", data);
-
     if (isJSON(data)) {
       const parsedData = JSON.parse(data);
-      return parsedData.choices?.[0]?.delta?.content || "";
+      return parsedData.choices?.[0]?.text || "";
     }
-    console.log("[Parse Stream] Data is not valid JSON. Returning empty.");
     return "";
   }
 }
@@ -78,11 +76,16 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
       onStart: async () => {
         console.log('[Stream] Stream started');
       },
-      onCompletion: async (completion) => {
-        console.log("[Stream] Received completion:", completion);
-        buffer += completion;
-        updateUI(completion);
+      onChunk: (chunk) => {
+        const parsedChunk = parseOpenAIStream()(chunk);
+        buffer += parsedChunk;
+        updateUI(parsedChunk);
       },
+      onCompletion: async () => {
+        console.log("[Stream] Stream completed");
+        // Verarbeiten Sie den `buffer` oder führen Sie eine andere Abschlusslogik durch.
+      },
+      
       onFinal: async (completion) => {
         console.log("[Stream] Stream completed with final completion:", completion);
 
