@@ -12,7 +12,7 @@ export async function POST(req, res) {
     
     // Create a completion using OpenAI
     const response = await openai.completions.create({
-      model: 'gpt-3.5-turbo', // or any other compatible model you wish to use
+      model: 'gpt-3.5-turbo-instruct', // or any other compatible model you wish to use
       stream: true,
       prompt,
     });
