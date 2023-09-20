@@ -7,6 +7,8 @@ const config = new Configuration({
 });
 const openai = new OpenAIApi(config);
 
+export const runtime = 'edge';
+
 // Utility function to check if a string is valid JSON
 const isJSON = (str) => {
     try {
@@ -50,6 +52,9 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
       presence_penalty: 0,
       stream: true // Enable stream response
     });
+    if (!response || !response.ok) {
+      throw new Error('Invalid response from OpenAI');
+    }
     console.log('Response from OpenAI:', response);
 
     console.log('Stream started...');
