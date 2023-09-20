@@ -1,43 +1,34 @@
 import React from 'react';
-import { BeatLoader } from 'react-spinners';
 
 const Message = ({ message, applyCode, isSandpackLoading }) => (
-  <Box my={1} style={{ wordWrap: "break-word" }}>
-    <Box
-      p={2}
-      bgcolor={message.sender === "ChatGPT" ? "#545454" : "#007BFF"}
-      color={message.sender === "ChatGPT" ? "#FFFFFF" : "white"}
-      borderRadius={16}
-      display="inline-block"
-      maxWidth="70%"
-    >
-      <Typography variant="body2">{message.text}</Typography>
-    </Box>
+  <div className="my-2 break-words">
+    <div className={`p-2 rounded-xl inline-block max-w-7/12 
+      ${message.sender === "ChatGPT" ? 'bg-gray-700 text-white' : 'bg-blue-500 text-white'}`}>
+      <p className="text-sm">{message.text}</p>
+    </div>
     {message.sender === "ChatGPT" && (
-      <Box display="flex" alignItems="center">
+      <div className="flex items-center">
         {!message.isError && message.isLoading && !message.isFullResponseReady && (
-          <BeatLoader color="#007BFF" size={10} margin={2} />
+          // You might want to replace BeatLoader with another spinner or keep it as it is.
+          // For simplicity, I've commented it out. 
+          // <BeatLoader color="#007BFF" size={10} margin={2} />
         )}
         {!message.isError && !message.isLoading && message.isFullResponseReady && (
-          <Button
-            variant="contained"
-            color="primary"
-            size="small"
+          <button
             onClick={() => applyCode(message.extractedCode)}
-            style={{ marginLeft: "1rem", marginTop: "0.5rem", backgroundColor: "#007BFF", color: "white" }}
+            className={`ml-4 mt-2 bg-blue-500 text-white rounded px-2 py-1 text-sm 
+              ${!message.extractedCode || isSandpackLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={!message.extractedCode || isSandpackLoading}
           >
             Apply Code
-          </Button>
+          </button>
         )}
-      </Box>
+      </div>
     )}
     {message.isError && (
-      <Typography variant="body2" color="error" style={{ whiteSpace: "pre-wrap", marginTop: "0.5rem" }}>
-        {message.text}
-      </Typography>
+      <p className="text-sm text-red-500 whitespace-pre-wrap mt-2">{message.text}</p>
     )}
-  </Box>
+  </div>
 );
 
 export default Message;
