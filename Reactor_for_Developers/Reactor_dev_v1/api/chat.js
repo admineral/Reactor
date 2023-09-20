@@ -9,27 +9,26 @@ const openai = new OpenAIApi(config);
 
 export const runtime = 'edge';
 
-export async function POST(req, res) {
+export async function POST(req) {
   try {
-    // Extract messages from the request body
+    // Extract the messages
     const { messages } = await req.json();
 
-    // Use the OpenAI API to generate a chat completion
-    const response = await openai.completions.create({
-      model: 'gpt-3.5-turbo-instruct',
+    // Request chat completion
+    const response = await openai.createChatCompletion({
+      model: 'gpt-3.5-turbo',
       stream: true,
       messages
     });
-
-    // Transform the API response into a readable stream
+    
+    // Create a stream from the response
     const stream = OpenAIStream(response);
-
-    // Convert the stream into a text stream that can be sent as a response
+    
+    // Return the streaming response
     return new StreamingTextResponse(stream);
-
   } catch (error) {
-    // Generic error handling (consider adding specific error handling if needed)
-    console.error(`Failed to get response from OpenAI: ${error.message}`);
-    return res.status(500).send({ error: `Unknown error: ${error.message}` });
+    console.error("Error:", error.message);
+    return new Response(error.message, { status: 500 });
   }
 }
+
