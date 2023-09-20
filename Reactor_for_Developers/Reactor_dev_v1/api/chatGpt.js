@@ -24,6 +24,6 @@ export async function POST(req, res) {
     return res.status(200).send(new StreamingTextResponse(stream));
 
   } catch (error) {
-    return res.status(500).send({ error: 'Failed to get response from OpenAI' });
+    return res.status(500).send({ error: `Failed to get response from OpenAI: ${error.message}` });
   }
 }
