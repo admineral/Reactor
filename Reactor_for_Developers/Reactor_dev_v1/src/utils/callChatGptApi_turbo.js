@@ -19,7 +19,6 @@ const isJSON = (str) => {
 
 export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
   try {
-
     const prompt = `Here is my current React code snippet: \n\n${code}\n\n . I need to make the following changes or additions to my code: ${chatInput}. \n\n
       Could you provide a detailed explanation understandable to a five-year-old but no code, and then the COMPLETE UPDATED CODE that incorporates these changes or additions? Also,if there are any new or updated dependencies needed, please list them out, each on a new line. If there are no new or updated dependencies, please DO NOT write anything in the dependencies section, leave it COMPLETELY EMPTY.
 
@@ -40,8 +39,6 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
       {__DependenciesEnd__}`
     ;
 
-    
-
     console.log('Sending OpenAI request...');
     const response = await openai.createCompletion({
       model: 'gpt-3.5-turbo-instruct',
@@ -53,18 +50,20 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
       presence_penalty: 0,
       stream: true // Enable stream response
     });
-    console.log(response);
+    console.log('Response from OpenAI:', response);
 
     console.log('Stream started...');
     const stream = OpenAIStream(response);
+    console.log('Stream from OpenAIStream:', stream);
+
     let buffer = '';
     let extractedCode = null;
     let extractedDependencies = null;
     let extractedAnswer = null;
     let codeStartIndex = -1;
-    console.log(stream)
 
     for await (const chunk of stream) {
+      console.log('Chunk from stream:', chunk);
       const lines = chunk.split('\n');
 
       for (const line of lines) {
