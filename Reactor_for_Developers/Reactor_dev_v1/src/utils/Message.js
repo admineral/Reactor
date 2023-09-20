@@ -11,7 +11,7 @@ const Message = ({ message, applyCode, isSandpackLoading }) => (
         {!message.isError && message.isLoading && !message.isFullResponseReady && (
           // You might want to replace BeatLoader with another spinner or keep it as it is.
           // For simplicity, I've commented it out. 
-          // <BeatLoader color="#007BFF" size={10} margin={2} />
+           <BeatLoader color="#007BFF" size={10} margin={2} />
         )}
         {!message.isError && !message.isLoading && message.isFullResponseReady && (
           <button
