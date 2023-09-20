@@ -1,5 +1,33 @@
 import React, { useState, useRef } from "react";
-import Message from './Message';
+
+const Message = ({ message = {}, applyCode, isSandpackLoading }) => (
+  <div className="my-2 break-words">
+    <div className={`p-2 rounded-xl inline-block max-w-7/12 
+      ${message.sender === "ChatGPT" ? 'bg-gray-700 text-white' : 'bg-blue-500 text-white'}`}>
+      <p className="text-sm">{message.text}</p>
+    </div>
+    {message.sender === "ChatGPT" && (
+      <div className="flex items-center">
+        {!message.isError && message.isLoading && !message.isFullResponseReady && (
+          <div className="w-4 h-4 border-t-2 border-blue-500 border-solid rounded-full animate-spin"></div>
+        )}
+        {!message.isError && !message.isLoading && message.isFullResponseReady && (
+          <button
+            onClick={() => applyCode(message.extractedCode)}
+            className={`ml-4 mt-2 bg-blue-500 text-white rounded px-4 py-2 text-lg 
+              ${!message.extractedCode || isSandpackLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={!message.extractedCode || isSandpackLoading}
+          >
+            Apply Code
+          </button>
+        )}
+      </div>
+    )}
+    {message.isError && (
+      <p className="text-sm text-red-500 whitespace-pre-wrap mt-2">{message.text}</p>
+    )}
+  </div>
+);
 
 const ChatBox = () => {
   const [chatInput, setChatInput] = useState("");
@@ -49,7 +77,7 @@ const ChatBox = () => {
         ref={chatHistoryRef}
       >
         {messages.map((message, index) => (
-          <Message key={index} sender={message.sender} text={message.text} />
+          <Message key={index} {...message} />
         ))}
       </div>
 
@@ -66,11 +94,10 @@ const ChatBox = () => {
           className="text-blue-500 p-2 rounded-full hover:bg-blue-500 hover:text-white"
           disabled={isProcessing}
         >
-          ➔ {/* Consider using an SVG or a suitable font-icon for the send icon */}
+          ➔
         </button>
       </form>
 
-      {/* For snackbar, consider using a library or a custom component with Tailwind CSS */}
       {snackbarOpen && (
         <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white py-2 px-4 rounded">
           {snackbarMessage}
@@ -81,3 +108,4 @@ const ChatBox = () => {
 }
 
 export default ChatBox;
+
