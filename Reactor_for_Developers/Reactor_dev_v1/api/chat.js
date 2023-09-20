@@ -15,7 +15,7 @@ export async function POST(req, res) {
     const { messages } = await req.json();
 
     // Use the OpenAI API to generate a chat completion
-    const response = await openai.Completion.create({
+    const response = await openai.completions.create({
       model: 'gpt-3.5-turbo-instruct',
       stream: true,
       messages
