@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Box, TextField, IconButton, Snackbar } from "@mui/material";
-import { fetchChatGptResponseTurbo } from './callChatGptApi_turbo';
 import SendIcon from '@mui/icons-material/Send';
 import Message from './Message';
 import UndoIcon from '@mui/icons-material/Undo';
@@ -14,107 +13,49 @@ const ChatBox = ({ code, setCode, isSandpackLoading, addDependency, dependencies
   const chatHistoryRef = useRef(null);
   const [codeHistory, setCodeHistory] = useState([code]);
 
-  const revertCode = () => {
-    if (codeHistory.length > 1) {
-      const newCodeHistory = [...codeHistory];
-      newCodeHistory.pop(); // remove current code
-      setCodeHistory(newCodeHistory); // update code history
-      setCode(newCodeHistory[newCodeHistory.length - 1]); // set the last code as the current code
-    }
-  };
-
-  const updateMessage = (buffer) => {
-    setMessages((prevMessages) => {
-      const lastMessageIndex = prevMessages.length - 1;
-      const lastMessage = prevMessages[lastMessageIndex];
-
-      if (lastMessage?.sender === "ChatGPT") {
-        const updatedMessages = [...prevMessages];
-        updatedMessages[lastMessageIndex] = {
-          ...lastMessage,
-          text: buffer,
-        };
-        return updatedMessages;
-      } else {
-        return [
-          ...prevMessages,
-          {
-            sender: "ChatGPT",
-            text: buffer,
-            isLoading: true,
-            isFullResponseReady: false,
-          },
-        ];
-      }
-    });
-  }
-
-  const addNewDependencies = (extractedDependencies) => {
-    if (extractedDependencies) {
-      let newDependencies = extractedDependencies.split("\n");
-      newDependencies.forEach(dep => {
-        addDependency(dep);
-      });
-    }
-  }
-
   const handleChatSubmit = async (e) => {
     e.preventDefault();
     setIsProcessing(true);
     setMessages([...messages, { sender: "user", text: chatInput }]);
     setChatInput("");
-
-    let buffer = "";
-    let stopStreaming = false;
-    let previousBuffer = "";
-
-    const updateUI = (content) => {
-      if (stopStreaming) {
-        return;
-      }
-
-      buffer += content;
-      const answerEndCodeStartIndex = buffer.indexOf('{__CodeStart__}');
-      if (answerEndCodeStartIndex !== -1) {
-        buffer = buffer.substring(0, answerEndCodeStartIndex);
-        stopStreaming = true;
-      }
-
-      if (buffer !== previousBuffer) {
-        previousBuffer = buffer;
-        updateMessage(buffer);
-      }
-    };
+    console.log("Chat submitted to server");
 
     try {
-      const responseStream = await fetchChatGptResponseTurbo(code, chatInput, updateUI);
+      const rawResponse = await fetch('/api/chatGpt', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          code,
+          chatInput
+        })
+      });
 
-      for await (const chunk of responseStream) {
-        updateUI(chunk);
+      if (!rawResponse.ok) {
+        throw new Error(`Server responded with ${rawResponse.status}`);
       }
 
-      const response = await responseStream.collect();
-      const extractedCode = response.code;
-      const extractedDependencies = response.dependencies;
+      console.log("Received response from server");
+      const reader = rawResponse.body.getReader();
+      let textBuffer = "";
 
-      addNewDependencies(extractedDependencies);
+      while (true) {
+        const { done, value } = await reader.read();
 
-      setMessages((prevMessages) => {
-          const lastMessageIndex = prevMessages.length - 1;
-          const lastMessage = prevMessages[lastMessageIndex];
+        if (done) break;
 
-          if (lastMessage?.sender === "ChatGPT") {
-            const updatedMessages = [...prevMessages];
-            updatedMessages[lastMessageIndex] = {
-              ...lastMessage,
-              extractedCode,
-              isLoading: false,
-              isFullResponseReady: true,
-            };
-            return updatedMessages;
-          }
-        });
+        const textChunk = new TextDecoder("utf-8").decode(value);
+        textBuffer += textChunk;
+        
+        console.log("Received chunk from server:", textChunk);
+      }
+
+      // Here, further process the final textBuffer, extract code, dependencies, etc.
+      console.log("Final textBuffer received:", textBuffer);
+
     } catch (error) {
+      console.error("Error while processing chat:", error);
       setSnackbarMessage('Something went wrong!');
       setSnackbarOpen(true);
     } finally {
