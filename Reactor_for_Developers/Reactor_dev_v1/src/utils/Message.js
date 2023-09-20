@@ -9,9 +9,7 @@ const Message = ({ message, applyCode, isSandpackLoading }) => (
     {message.sender === "ChatGPT" && (
       <div className="flex items-center">
         {!message.isError && message.isLoading && !message.isFullResponseReady && (
-          // You might want to replace BeatLoader with another spinner or keep it as it is.
-          // For simplicity, I've commented it out. 
-           <BeatLoader color="#007BFF" size={10} margin={2} />
+          <div className="w-4 h-4 border-t-2 border-blue-500 border-solid rounded-full animate-spin"></div>
         )}
         {!message.isError && !message.isLoading && message.isFullResponseReady && (
           <button

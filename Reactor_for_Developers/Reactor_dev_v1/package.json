@@ -6,8 +6,6 @@
     "@codemirror/autocomplete": "^6.7.1",
     "@codesandbox/sandpack-react": "^2.6.4",
     "@codesandbox/sandpack-themes": "^2.0.21",
-    "@emotion/react": "^11.11.0",
-    "@emotion/styled": "^11.11.0",
     "ai": "^2.2.13",
     "autoprefixer": "^10.4.15",
     "dotenv": "^16.0.3",
@@ -21,10 +19,8 @@
     "tailwindcss": "^3.3.3"
   },
   "scripts": {
-    
     "start": "TAILWIND_MODE=watch react-scripts start",
     "build": "react-scripts build && tailwindcss -i src/styles.css -o src/output.css --minify",
-    
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
