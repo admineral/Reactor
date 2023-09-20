@@ -20,9 +20,7 @@ const isJSON = (str) => {
 export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
   try {
 
-    const userChangeRequestMessage = {
-      role: "user",
-      content: `Here is my current React code snippet: \n\n${code}\n\n . I need to make the following changes or additions to my code: ${chatInput}. \n\n
+    const prompt = `Here is my current React code snippet: \n\n${code}\n\n . I need to make the following changes or additions to my code: ${chatInput}. \n\n
       Could you provide a detailed explanation understandable to a five-year-old but no code, and then the COMPLETE UPDATED CODE that incorporates these changes or additions? Also,if there are any new or updated dependencies needed, please list them out, each on a new line. If there are no new or updated dependencies, please DO NOT write anything in the dependencies section, leave it COMPLETELY EMPTY.
 
       Note: Please NEVER show code in the explanation, and ensure to format your response as follows: explanation, then code, then dependencies. Please answer in this format: 
@@ -40,9 +38,9 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
       [If there are any new or updated dependencies, list them here. If there are none, write __none__ ]
 
       {__DependenciesEnd__}`
-    };
+    ;
 
-    const prompt = [userChangeRequestMessage];
+    
 
     console.log('Sending OpenAI request...');
     const response = await openai.createCompletion({
