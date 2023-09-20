@@ -1,5 +1,4 @@
 import React from 'react';
-import { Box, Typography, Button } from '@mui/material';
 import { BeatLoader } from 'react-spinners';
 
 const Message = ({ message, applyCode, isSandpackLoading }) => (

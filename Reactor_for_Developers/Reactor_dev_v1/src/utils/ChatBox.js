@@ -1,6 +1,4 @@
 import React, { useState, useRef } from "react";
-import { Box, TextField, IconButton, Snackbar } from "@mui/material";
-import SendIcon from '@mui/icons-material/Send';
 import Message from './Message';
 
 const ChatBox = () => {
@@ -45,50 +43,40 @@ const ChatBox = () => {
   };
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      height={400}
-      bgcolor="#333333"
-      boxShadow={2}
-      borderRadius={2}
-      p={2}
-      justifyContent="space-between"
-    >
-      <Box
-        flexGrow={1}
-        p={1}
-        overflow="auto"
-        style={{ maxHeight: "calc(100% - 56px)" }}
+    <div className="flex flex-col h-[400px] bg-gray-800 p-2 rounded shadow space-y-4">
+      <div 
+        className="flex-grow p-1 overflow-auto max-h-[calc(100%-56px)] bg-gray-700 rounded"
         ref={chatHistoryRef}
-        bgcolor="#2C2C2C"
-        borderRadius={2}
       >
         {messages.map((message, index) => (
           <Message key={index} sender={message.sender} text={message.text} />
         ))}
-      </Box>
+      </div>
 
-      <form onSubmit={handleChatSubmit}>
-        <Box display="flex" p={1} alignItems="center">
-          <TextField
-            fullWidth
-            value={chatInput}
-            onChange={(e) => setChatInput(e.target.value)}
-            variant="outlined"
-            size="small"
-            label="Type your message"
-            InputProps={{ style: { color: 'white' } }}
-            InputLabelProps={{ style: { color: 'white' } }}
-          />
-          <IconButton type="submit" style={{ color: "#007BFF", marginLeft: "1rem" }} disabled={isProcessing}>
-            <SendIcon />
-          </IconButton>
-        </Box>
+      <form onSubmit={handleChatSubmit} className="flex p-1 items-center space-x-4">
+        <input
+          className="flex-grow rounded border px-3 py-2 bg-gray-700 text-white placeholder-white"
+          type="text"
+          value={chatInput}
+          onChange={(e) => setChatInput(e.target.value)}
+          placeholder="Type your message"
+        />
+        <button 
+          type="submit" 
+          className="text-blue-500 p-2 rounded-full hover:bg-blue-500 hover:text-white"
+          disabled={isProcessing}
+        >
+          ➔ {/* Consider using an SVG or a suitable font-icon for the send icon */}
+        </button>
       </form>
 
-      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={() => setSnackbarOpen(false)} message={snackbarMessage} />
-    </Box>
+      {/* For snackbar, consider using a library or a custom component with Tailwind CSS */}
+      {snackbarOpen && (
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white py-2 px-4 rounded">
+          {snackbarMessage}
+        </div>
+      )}
+    </div>
   );
 }
 
