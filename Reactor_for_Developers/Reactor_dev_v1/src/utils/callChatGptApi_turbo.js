@@ -1,3 +1,12 @@
+import { Configuration, OpenAIApi } from 'openai-edge';
+import { OpenAIStream, StreamingTextResponse } from 'ai';
+
+// Create an OpenAI API client
+const config = new Configuration({
+  apiKey: process.env.REACT_APP_API_KEY,
+});
+const openai = new OpenAIApi(config);
+
 // Utility function to check if a string is valid JSON
 const isJSON = (str) => {
     try {
@@ -36,70 +45,44 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
     const prompt = [userChangeRequestMessage];
 
     console.log('Sending OpenAI request...');
-    const response = await fetch('https://api.openai.com/v1/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.REACT_APP_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: 'gpt-3.5-turbo-instruct',
-        prompt,
-        max_tokens: 2000,
-        temperature: 0.1,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0,
-        stream: true // Enable stream response
-      }),
+    const response = await openai.createCompletion({
+      model: 'gpt-3.5-turbo-instruct',
+      prompt,
+      max_tokens: 2000,
+      temperature: 0.1,
+      top_p: 1,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+      stream: true // Enable stream response
     });
 
-    if (!response.ok) {
-      // Handle response error
-      throw new Error(`API response error, status: ${response.status}`);
-    }
-
     console.log('Stream started...');
-    const reader = response.body.getReader();
-    let partialLine = '';
+    const stream = OpenAIStream(response);
     let buffer = '';
     let extractedCode = null;
     let extractedDependencies = null;
     let extractedAnswer = null;
     let codeStartIndex = -1;
 
-    while (true) {
-        console.log('Buffer loading...');
-        const { value, done } = await reader.read();
+    for await (const chunk of stream) {
+      const lines = chunk.split('\n');
 
-        if (done) {
-            console.log('Stream ended...');
-            break;
-        }
+      for (const line of lines) {
+        if (line.startsWith('data:')) {
+          const jsonLine = line.slice('data:'.length);
+          if (isJSON(jsonLine)) {
+            const parsedChunk = JSON.parse(jsonLine);
+            const content = parsedChunk.choices?.[0]?.delta?.content;
 
-        const textDecoder = new TextDecoder("utf-8");
-        const chunk = textDecoder.decode(value);
-        const lines = (partialLine + chunk).split('\n');
-
-        // Save the last line in case it's partial
-        partialLine = lines.pop();
-
-        for (const line of lines) {
-            if (line.startsWith('data:')) {
-                const jsonLine = line.slice('data:'.length);
-                if (isJSON(jsonLine)) {
-                    const parsedChunk = JSON.parse(jsonLine);
-                    const content = parsedChunk.choices?.[0]?.delta?.content;
-
-                    if (content) {
-                      // Add content to the buffer
-                      buffer += content;
-                      // Send content to UI
-                      updateUI(content);
-                    }
-                }
+            if (content) {
+              // Add content to the buffer
+              buffer += content;
+              // Send content to UI
+              updateUI(content);
             }
+          }
         }
+      }
     }
 
      // After the stream has ended

@@ -87,7 +87,13 @@ const ChatBox = ({ code, setCode, isSandpackLoading, addDependency, dependencies
     };
 
     try {
-      const response = await fetchChatGptResponseTurbo(code, chatInput, updateUI);
+      const responseStream = await fetchChatGptResponseTurbo(code, chatInput, updateUI);
+
+      for await (const chunk of responseStream) {
+        updateUI(chunk);
+      }
+
+      const response = await responseStream.collect();
       const extractedCode = response.code;
       const extractedDependencies = response.dependencies;
 
