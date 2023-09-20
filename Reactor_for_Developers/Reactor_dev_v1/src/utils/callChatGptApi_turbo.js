@@ -1,6 +1,6 @@
 // Import necessary libraries and modules
 import { Configuration, OpenAIApi } from 'openai-edge';
-import { AIStream } from 'ai';
+import { OpenAIStream } from 'ai';
 
 // Initialize the OpenAI configuration
 const config = new Configuration({
@@ -9,29 +9,6 @@ const config = new Configuration({
 const openai = new OpenAIApi(config);
 
 export const runtime = 'edge';
-
-// Utility function to verify if a string is in JSON format
-const isJSON = (str) => {
-    try {
-        JSON.parse(str);
-        return true;
-    } catch (e) {
-        console.error("JSON Parsing failed for string:", str, "\nError:", e);
-        return false;
-    }
-};
-
-// A function that parses the streaming response from OpenAI
-function parseOpenAIStream(): AIStreamParser {
-  return data => {
-    console.log("[Parse Stream] Received data chunk:", data);
-    if (isJSON(data)) {
-      const parsedData = JSON.parse(data);
-      return parsedData.choices?.[0]?.text || "";
-    }
-    return "";
-  }
-}
 
 // Main function to fetch response from OpenAI based on given code and chat input
 export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
@@ -81,61 +58,28 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
     // Log the received streaming response for debugging
     console.log("[Stream] Response received from OpenAI:", response);
 
-    // Buffer to collect the data from streaming response
-    let buffer = '';
-
-    // Initialize AIStream and define callback handlers
-    const openAIStream = AIStream(response, parseOpenAIStream(), {
+    // Initialize the readable stream
+    const openAIStream = OpenAIStream(response, {
       onStart: async () => {
         console.log('[Stream] Stream started');
       },
-      onChunk: (chunk) => {
-        const parsedChunk = parseOpenAIStream()(chunk);
-        buffer += parsedChunk;
-        updateUI(parsedChunk); // Call to update the UI with new data
-        
-        // Hier geben Sie den aktuellen Inhalt des Buffers aus:
-        console.log("[Buffer] Current buffer:", buffer);
-      },
-      onCompletion: async () => {
-        console.log("[Stream] Stream completed");
+      onCompletion: async (completion) => {
+        console.log('[Stream] Completion:', completion);
+        // Process the completion as needed
       },
       onFinal: async (completion) => {
         console.log("[Stream] Stream completed with final completion:", completion);
-
-        // Extract data from buffer
-        let extractedCode, extractedDependencies, extractedAnswer;
-        const answerEndCodeStartIndex = buffer.indexOf('{__CodeStart__}');
-        let dependenciesStartIndex = buffer.indexOf('{__DependenciesStart__}');
-        
-        console.log("[Buffer] Buffer after stream completion:", buffer);
-        
-        // Extract answer, code, and dependencies
-        if (answerEndCodeStartIndex !== -1) {
-          extractedAnswer = buffer.substring(0, answerEndCodeStartIndex).trim();
-          const codeEndIndex = buffer.indexOf('{__CodeEnd__}', answerEndCodeStartIndex);
-          if (codeEndIndex !== -1) {
-            const codeStartIndex = answerEndCodeStartIndex + '{__CodeStart__}'.length;
-            extractedCode = buffer.substring(codeStartIndex, codeEndIndex).trim();
-          }
-          if (dependenciesStartIndex !== -1) {
-            const dependenciesEndIndex = buffer.indexOf('{__DependenciesEnd__}', dependenciesStartIndex);
-            if (dependenciesEndIndex !== -1) {
-              dependenciesStartIndex += '{__DependenciesStart__}'.length;
-              extractedDependencies = buffer.substring(dependenciesStartIndex, dependenciesEndIndex).trim();
-            }
-          }
-        } else {
-          extractedAnswer = buffer;
-        }
-
-        console.log("[Extracted Data] Answer:", extractedAnswer, "Code:", extractedCode, "Dependencies:", extractedDependencies);
-        return { answer: extractedAnswer, code: extractedCode, dependencies: extractedDependencies };
+        // Process the final completion as needed
+      },
+      onToken: async (token) => {
+        console.log("[Stream] Token:", token);
+        updateUI(token); // Call to update the UI with new token
       }
     });
 
     // Now you can consume the openAIStream as needed
-    // ... 
+    // ...
+
   } catch (error) {
     console.error(`[Error] Error occurred while fetching GPT-3 response:`, error);
     throw error;
