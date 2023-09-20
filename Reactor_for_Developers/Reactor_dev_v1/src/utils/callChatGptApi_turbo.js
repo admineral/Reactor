@@ -13,12 +13,14 @@ const isJSON = (str) => {
         JSON.parse(str);
         return true;
     } catch (e) {
+        console.log("JSON Parsing failed:", e);
         return false;
     }
 };
 
 function parseOpenAIStream(): AIStreamParser {
   return data => {
+    console.log("Received data chunk:", data);
     if (isJSON(data)) {
       const parsedData = JSON.parse(data);
       return parsedData.choices?.[0]?.delta?.content || "";
@@ -30,8 +32,26 @@ function parseOpenAIStream(): AIStreamParser {
 export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
   try {
     const prompt = `Here is my current React code snippet: \n\n${code}\n\n . I need to make the following changes or additions to my code: ${chatInput}. \n\n
-    Could you provide a detailed explanation understandable to a five-year-old but no code, and then the COMPLETE UPDATED CODE that incorporates these changes or additions? Also, if there are any new or updated dependencies needed, please list them out, each on a new line. If there are no new or updated dependencies, please DO NOT write anything in the dependencies section, leave it COMPLETELY EMPTY. Note: Please NEVER show code in the explanation, and ensure to format your response as follows: explanation, then code, then dependencies. Please answer in this format: \n\n
-    [Your short explanation without code here].{__CodeStart__}[Your entire React code here]{__CodeEnd__}{__DependenciesStart__}[If there are any new or updated dependencies, list them here. If there are none, write __none__ ]{__DependenciesEnd__}`;
+    Could you provide a detailed explanation understandable to a five-year-old but no code, and then the COMPLETE UPDATED CODE that incorporates these changes or additions? Also, if there are any new or updated dependencies needed, please list them out, each on a new line. If there are no new or updated dependencies, please DO NOT write anything in the dependencies section, leave it COMPLETELY EMPTY.
+
+    Note: Please NEVER show code in the explanation, and ensure to format your response as follows: explanation, then code, then dependencies. Please answer in this format: 
+      \n\n
+    [Your short explanation without code here].
+
+    {__CodeStart__}
+
+    [Your entire React code here]
+
+    {__CodeEnd__}
+
+    {__DependenciesStart__}
+
+    [If there are any new or updated dependencies, list them here. If there are none, write __none__ ]
+
+    {__DependenciesEnd__}`
+  ;
+
+    console.log("Preparing to send request to OpenAI with prompt:", prompt);
     const response = await openai.createCompletion({
       model: 'gpt-3.5-turbo-instruct',
       prompt,
@@ -44,8 +64,11 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
     });
 
     if (!response.ok) {
+      console.log("Response from OpenAI not OK. Status:", response.status);
       throw new Error('Invalid response from OpenAI');
     }
+
+    console.log("Response received from OpenAI:", response);
 
     let buffer = '';
 
@@ -54,15 +77,18 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
         console.log('Stream started');
       },
       onCompletion: async (completion) => {
+        console.log("Received completion:", completion);
         buffer += completion;
         updateUI(completion);
       },
       onFinal: async (completion) => {
-        console.log("Stream completed");
+        console.log("Stream completed with final completion:", completion);
 
         let extractedCode, extractedDependencies, extractedAnswer;
         const answerEndCodeStartIndex = buffer.indexOf('{__CodeStart__}');
         let dependenciesStartIndex = buffer.indexOf('{__DependenciesStart__}');
+        
+        console.log("Buffer after stream completion:", buffer);
         
         if (answerEndCodeStartIndex !== -1) {
           extractedAnswer = buffer.substring(0, answerEndCodeStartIndex).trim();
@@ -82,6 +108,7 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
           extractedAnswer = buffer;
         }
 
+        console.log("Extracted data - Answer:", extractedAnswer, "Code:", extractedCode, "Dependencies:", extractedDependencies);
         return { answer: extractedAnswer, code: extractedCode, dependencies: extractedDependencies };
       }
     });
@@ -89,7 +116,7 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
     // Now you can consume the openAIStream as needed
     // ... 
   } catch (error) {
-    console.log(`Error occurred while fetching GPT-3 response: ${error}`);
+    console.log(`Error occurred while fetching GPT-3 response:`, error);
     throw error;
   }
 }
