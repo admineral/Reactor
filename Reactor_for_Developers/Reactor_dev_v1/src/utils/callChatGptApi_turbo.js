@@ -1,6 +1,8 @@
+// Import necessary libraries and modules
 import { Configuration, OpenAIApi } from 'openai-edge';
 import { AIStream } from 'ai';
 
+// Initialize the OpenAI configuration
 const config = new Configuration({
   apiKey: process.env.REACT_APP_API_KEY,
 });
@@ -8,16 +10,18 @@ const openai = new OpenAIApi(config);
 
 export const runtime = 'edge';
 
+// Utility function to verify if a string is in JSON format
 const isJSON = (str) => {
     try {
         JSON.parse(str);
         return true;
     } catch (e) {
-        console.log("JSON Parsing failed for string:", str, "\nError:", e);
+        console.error("JSON Parsing failed for string:", str, "\nError:", e);
         return false;
     }
 };
 
+// A function that parses the streaming response from OpenAI
 function parseOpenAIStream(): AIStreamParser {
   return data => {
     console.log("[Parse Stream] Received data chunk:", data);
@@ -29,8 +33,10 @@ function parseOpenAIStream(): AIStreamParser {
   }
 }
 
+// Main function to fetch response from OpenAI based on given code and chat input
 export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
   try {
+    // Construct the prompt string
     const prompt = `Here is my current React code snippet: \n\n${code}\n\n . I need to make the following changes or additions to my code: ${chatInput}. \n\n
     Could you provide a detailed explanation understandable to a five-year-old but no code, and then the COMPLETE UPDATED CODE that incorporates these changes or additions? Also, if there are any new or updated dependencies needed, please list them out, each on a new line. If there are no new or updated dependencies, please DO NOT write anything in the dependencies section, leave it COMPLETELY EMPTY.
 
@@ -49,9 +55,12 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
     [If there are any new or updated dependencies, list them here. If there are none, write __none__ ]
 
     {__DependenciesEnd__}`
-  ; // For brevity, I kept this as-is
+  ;
 
+    // Log the constructed prompt for debugging
     console.log("[Request] Preparing to send request to OpenAI with prompt:", prompt);
+
+    // Make a request to OpenAI for completion
     const response = await openai.createCompletion({
       model: 'gpt-3.5-turbo-instruct',
       prompt,
@@ -63,15 +72,19 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
       stream: true
     });
 
+    // Error handling if the response isn't successful
     if (!response.ok) {
       console.error("[Error] Response from OpenAI not OK. Status:", response.status);
       throw new Error('Invalid response from OpenAI');
     }
 
+    // Log the received streaming response for debugging
     console.log("[Stream] Response received from OpenAI:", response);
 
+    // Buffer to collect the data from streaming response
     let buffer = '';
 
+    // Initialize AIStream and define callback handlers
     const openAIStream = AIStream(response, parseOpenAIStream(), {
       onStart: async () => {
         console.log('[Stream] Stream started');
@@ -79,13 +92,11 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
       onChunk: (chunk) => {
         const parsedChunk = parseOpenAIStream()(chunk);
         buffer += parsedChunk;
-        updateUI(parsedChunk);
+        updateUI(parsedChunk); // Call to update the UI with new data
       },
       onCompletion: async () => {
         console.log("[Stream] Stream completed");
-        // Verarbeiten Sie den `buffer` oder führen Sie eine andere Abschlusslogik durch.
       },
-      
       onFinal: async (completion) => {
         console.log("[Stream] Stream completed with final completion:", completion);
 
