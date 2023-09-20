@@ -53,6 +53,7 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
       presence_penalty: 0,
       stream: true // Enable stream response
     });
+    console.log(response);
 
     console.log('Stream started...');
     const stream = OpenAIStream(response);
@@ -61,6 +62,7 @@ export const fetchChatGptResponseTurbo = async (code, chatInput, updateUI) => {
     let extractedDependencies = null;
     let extractedAnswer = null;
     let codeStartIndex = -1;
+    console.log(stream)
 
     for await (const chunk of stream) {
       const lines = chunk.split('\n');
