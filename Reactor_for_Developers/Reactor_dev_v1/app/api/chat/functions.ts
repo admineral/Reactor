@@ -3,11 +3,13 @@ import { ChatCompletionCreateParams } from "openai/resources/chat/index";
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.SUPABASE_URL;
-if (!process.env.SUPABASE_KEY) {
-  throw new Error('SUPABASE_KEY is not set in the environment variables');
+const supabaseKey = process.env.SUPABASE_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error('SUPABASE_URL or SUPABASE_KEY is not set in the environment variables');
 }
-const supabaseKey = process.env.SUPABASE_KEY || '';
-const supabase = createClient(supabaseUrl, supabaseKey)
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 export const functions: ChatCompletionCreateParams.Function[] = [
   {
