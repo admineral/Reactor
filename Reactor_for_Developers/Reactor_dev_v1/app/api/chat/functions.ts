@@ -79,13 +79,13 @@ async function add_code_to_supabase({ fileName, path: filePath, code }: { fileNa
         .order('id', { ascending: false })
         .limit(1);
 
-      if (latestError || !latestData || latestData.length === 0) {
-        console.error('Fehler beim Abrufen der neuesten ID:', latestError?.message);
-        reject({ error: latestError?.message || 'No data after code insertion' });
-      }
-
-      console.log(`Code erfolgreich zu ${filePath}/${fileName} hinzugefügt.`);
-      resolve({ success: true, fileName, path: filePath, id: latestData[0].id, code });
+        if (latestError || !latestData || latestData.length === 0) {
+          console.error('Fehler beim Abrufen der neuesten ID:', latestError?.message);
+          reject({ error: latestError?.message || 'No data after code insertion' });
+        } else {
+          console.log(`Code erfolgreich zu ${filePath}/${fileName} hinzugefügt.`);
+          resolve({ success: true, fileName, path: filePath, id: latestData[0]?.id, code });
+        }
     });
     
   }
