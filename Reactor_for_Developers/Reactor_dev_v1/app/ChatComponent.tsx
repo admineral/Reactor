@@ -9,7 +9,18 @@ import Textarea from "react-textarea-autosize";
 import { examples } from "./utils/examples";
 import clsx from "clsx";
 
-const ChatComponent = ({ messages, input, setInput, handleSubmit, isLoading, disabled, formRef, inputRef }) => {
+interface ChatComponentProps {
+  messages: Array<{ role: string, content: string }>;
+  input: string;
+  setInput: (input: string) => void;
+  handleSubmit: (event: React.FormEvent) => void;
+  isLoading: boolean;
+  disabled: boolean;
+  formRef: React.RefObject<HTMLFormElement>;
+  inputRef: React.RefObject<HTMLTextAreaElement>;
+}
+
+const ChatComponent: React.FC<ChatComponentProps> = ({ messages, input, setInput, handleSubmit, isLoading, disabled, formRef, inputRef }) => {
   return (
     <>
       {messages.length === 0 && (
