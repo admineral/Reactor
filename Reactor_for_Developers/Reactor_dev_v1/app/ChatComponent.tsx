@@ -13,7 +13,7 @@ interface ChatComponentProps {
   messages: Array<{ role: string, content: string }>;
   input: string;
   setInput: (input: string) => void;
-  handleSubmit: (event: React.FormEvent) => void;
+  handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   isLoading: boolean;
   disabled: boolean;
   formRef: React.RefObject<HTMLFormElement>;
@@ -107,7 +107,9 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ messages, input, setInput
       <div className="fixed bottom-0 flex w-full flex-col items-center space-y-3 bg-gradient-to-b from-transparent via-gray-100 to-gray-100 p-5 pb-3 sm:px-0">
         <form
           ref={formRef}
-          onSubmit={(event: React.FormEvent<HTMLFormElement>) => handleSubmit(event)}
+          onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
+            handleSubmit(event);
+          }}
           className="relative w-full max-w-screen-md rounded-xl border border-gray-200 bg-white px-4 pb-2 pt-3 shadow-lg sm:pb-3 sm:pt-4"
         >
           <Textarea
