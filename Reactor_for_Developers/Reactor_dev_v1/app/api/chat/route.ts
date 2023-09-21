@@ -7,6 +7,8 @@ import {
 } from "ai";
 import { functions, runFunction } from "./functions";
 
+type JSONValue = string | number | boolean | null | JSONValue[] | { [key: string]: JSONValue };
+
 // Create an OpenAI API client (that's edge friendly!)
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -58,7 +60,7 @@ export async function POST(req: Request) {
       { name, arguments: args },
       createFunctionCallMessages,
     ) => {
-      const result = await runFunction(name, args);
+      const result = await runFunction(name, args) as JSONValue;
       const newMessages = createFunctionCallMessages(result);
       return openai.chat.completions.create({
         model: "gpt-3.5-turbo-0613",
