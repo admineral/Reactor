@@ -5,7 +5,18 @@ import { SandpackProvider, SandpackLayout, SandpackCodeEditor, SandpackPreview, 
 import { monokaiPro } from "@codesandbox/sandpack-themes";
 import { autocompletion, completionKeymap } from "@codemirror/autocomplete";
 
-const SandpackComponent = ({ code, updateCode, windowHeight, chatboxHeight, dependencies }) => {
+
+
+interface SandpackComponentProps {
+  code: string;
+  updateCode: (newCode: string) => void;
+  windowHeight: number;
+  chatboxHeight: number;
+  dependencies: Record<string, string>;
+}
+
+
+const SandpackComponent: React.FC<SandpackComponentProps> = ({ code, updateCode, windowHeight, chatboxHeight, dependencies }) => {
   const [showFileExplorer, setShowFileExplorer] = useState(false);
 
   const toggleFileExplorer = () => {
