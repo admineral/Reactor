@@ -43,8 +43,6 @@ const SandpackComponent: React.FC<SandpackComponentProps> = ({ code, updateCode,
           ...dependencies,
         },
       }}
-      code={code}
-      updateCode={newCode => updateCode(newCode)}
     >
       <SandpackLayout>
         {showFileExplorer && <SandpackFileExplorer />}
@@ -55,7 +53,7 @@ const SandpackComponent: React.FC<SandpackComponentProps> = ({ code, updateCode,
           showInlineErrors={true}
           wrapContent={true}
           extensions={[autocompletion()]}
-          extensionsKeymap={[completionKeymap]}
+          extensionsKeymap={[...completionKeymap]}
         />
         <SandpackPreview
           style={{ flex: 1, height: windowHeight - chatboxHeight }}
