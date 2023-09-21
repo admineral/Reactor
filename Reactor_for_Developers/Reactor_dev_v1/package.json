@@ -1,45 +1,46 @@
 {
-  "name": "live-react-chatgpt",
-  "version": "0.1.0",
+  "name": "reactor",
+  "version": "0.0.1",
   "private": true,
-  "dependencies": {
-    "@codemirror/autocomplete": "^6.7.1",
-    "@codesandbox/sandpack-react": "^2.6.4",
-    "@codesandbox/sandpack-themes": "^2.0.21",
-    "ai": "^2.2.13",
-    "autoprefixer": "^10.4.15",
-    "dotenv": "^16.0.3",
-    "openai-edge": "^1.2.2",
-    "postcss": "^8.4.30",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.11.2",
-    "react-scripts": "5.0.1",
-    "react-spinners": "0.13.8",
-    "tailwindcss": "^3.3.3"
-  },
   "scripts": {
-    "start": "TAILWIND_MODE=watch react-scripts start",
-    "build": "react-scripts build && tailwindcss -i src/styles.css -o src/output.css --minify",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "format:write": "prettier --write \"**/*.{css,js,json,jsx,ts,tsx}\"",
+    "format": "prettier \"**/*.{css,js,json,jsx,ts,tsx}\""
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+  "dependencies": {
+    "@codesandbox/sandpack-react": "^2.7.1",
+    "@codesandbox/sandpack-themes": "^2.0.21",
+    "@supabase/supabase-js": "^2.36.0",
+    "@types/node": "20.3.1",
+    "@types/react": "18.2.14",
+    "@types/react-dom": "18.2.6",
+    "@upstash/ratelimit": "^0.4.3",
+    "@vercel/analytics": "^1.0.1",
+    "@vercel/kv": "^0.2.2",
+    "ai": "2.2.2",
+    "autoprefixer": "10.4.14",
+    "clsx": "^1.2.1",
+    "eslint": "8.43.0",
+    "eslint-config-next": "13.4.7",
+    "lucide-react": "^0.252.0",
+    "next": "13.4.7",
+    "openai": "^4.0.0",
+    "postcss": "8.4.24",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-markdown": "^8.0.7",
+    "react-textarea-autosize": "^8.4.1",
+    "remark-gfm": "^3.0.1",
+    "sonner": "^0.5.0",
+    "tailwindcss": "3.3.2",
+    "typescript": "5.1.3"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.9",
+    "prettier": "^2.8.8",
+    "prettier-plugin-tailwindcss": "^0.3.0"
   }
 }

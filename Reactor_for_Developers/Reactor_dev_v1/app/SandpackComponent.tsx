@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useState } from "react";
 import { SandpackProvider, SandpackLayout, SandpackCodeEditor, SandpackPreview, SandpackFileExplorer } from "@codesandbox/sandpack-react";
 import { monokaiPro } from "@codesandbox/sandpack-themes";
@@ -36,7 +38,7 @@ const SandpackComponent = ({ code, updateCode, windowHeight, chatboxHeight, depe
       <SandpackLayout>
         {showFileExplorer && <SandpackFileExplorer />}
         <SandpackCodeEditor
-          style={{ flex: 1, height: windowHeight - chatboxHeight }}
+          style={{ flex: 1, height: windowHeight - chatboxHeight, width: '1000px' }}
           showLineNumbers={true}
           showTabs={true}
           showInlineErrors={true}
