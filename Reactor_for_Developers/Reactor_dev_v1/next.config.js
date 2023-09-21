@@ -12,7 +12,7 @@ const nextConfig = {
       },
       {
         source: "/Home",
-        destination: "https://chathn-reactor.vercel.app",
+        destination: "https://reactor-dev.vercel.app",
         permanent: true,
       },
     ];
